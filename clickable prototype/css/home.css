@@ -1,0 +1,107 @@
+
+article {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+}
+
+    .post-card {
+        width: 550px;
+        background-color: var(--customGray);
+        border-radius: 20px;
+    }
+
+        .post-title {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+        }
+
+            .post-user {
+                display: flex;
+                gap: 20px;
+            }
+
+                .user-photo {
+                    width: 50px;
+                    height: 50px;
+                    border-radius: 50%;
+                    cursor: pointer;
+                }
+
+                .post-info {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 2px;
+                }
+
+                    .post-info p {
+                        font-size: 14px;
+                        color: gray;
+                    }
+
+                    .post-info .post-user-name {
+                        font-size: 16px;
+                        color: var(--customWhite);
+                    }
+
+                        .post-user-name:hover {
+                            text-decoration: underline;
+                            cursor: pointer;
+                        }
+
+            .post-title i {
+                font-size: 20px;
+                cursor: pointer;
+            }
+
+        .post-photo {
+            width: 100%;
+            height: 340px;
+        }
+
+        .post-reactions {
+            display: flex;
+            justify-content: space-between;
+
+            padding: 0 20px;
+            margin: 10px;
+        }
+
+            .post-reactions-icons {
+                display: flex;
+                gap: 20px;
+            }
+
+                .post-reactions-icons i {
+                    font-size: 20px;
+                    cursor: pointer;
+                }
+
+                .fa-bookmark {
+                    font-size: 20px;
+                    cursor: pointer;
+                }
+
+        .post-description {
+            padding: 0 20px;
+            font-size: 14px;
+            margin: 20px 0 10px 0;
+        }
+
+            .post-description p {
+                color: gray;
+                margin: 5px 0;
+            }
+
+        .post-comments {
+            padding: 0 20px;
+            margin: 5px 0 20px 0;
+        }
+
+        .post-comments:hover {
+            text-decoration: underline;
+            cursor: pointer;
+        }
