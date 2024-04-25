@@ -1,32 +1,27 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { useSocket } from "../context/SocketContext";
-import { Mic, MicOff, PhoneOff, Video, VideoOff } from "lucide-react";
+import CallControls from "../components/CallControls";
+import CallUser from "../components/CallUser";
+import axios from "axios";
 import * as process from "process";
 
 window.global = window;
 window.process = process;
 window.Buffer = [];
 
-import SampleImg from "../assets/images/user.jpg";
-import axios from "axios";
-
 const Call = () => {
-	const { id } = useParams()
-	const [user, setUser] = useState({})
+	const { id } = useParams();
+	const [user, setUser] = useState({});
 
 	const [toggleVideo, setToggleVideo] = useState(false);
 	const [toggleAudio, setToggleAudio] = useState(true);
-	const [autoPlay, setAutoPlay] = useState(true);
-	const navigate = useNavigate();
+
 	const {
 		socket,
-		connectionRef,
-		// setCall,
 		userVideo,
 		setStream,
 		myVideo,
-		setCallEnded,
 		setCaller,
 		setReceivingCall,
 		setName,
@@ -34,37 +29,31 @@ const Call = () => {
 		receivingCall,
 		callAccepted,
 		stream,
+		callEnded,
 	} = useSocket();
 
-	const getUser = async (id) => { 
+	const getUser = async (id) => {
 		try {
-			const response = await axios.get(`http://localhost:5000/user/${id}`, {
-				headers: {
-					Authorization: `Bearer ${localStorage.getItem(
-						"token"
-					)}`,
-				},
-			})
-			console.log("response sa call page: ", response)
-			setUser(response.data.data)
+			const response = await axios.get(
+				`http://localhost:5000/user/${id}`,
+				{
+					headers: {
+						Authorization: `Bearer ${localStorage.getItem(
+							"token"
+						)}`,
+					},
+				}
+			);
+			console.log("response sa call page: ", response);
+			setUser(response.data.data);
 		} catch (error) {
 			console.log("Call page get user error: ", error);
 		}
-	}
+	};
 
 	useEffect(() => {
 		getUser(id);
-	}, [])
-
-	const handleVideo = () => {
-		const newToggleState = !toggleVideo;
-		setToggleVideo(newToggleState);
-		socket.emit("camera_state_change", newToggleState);
-
-		if (myVideo.current) {
-			myVideo.current.srcObject = toggleVideo ? null : stream;
-		}
-	};
+	}, []);
 
 	useEffect(() => {
 		socket.on("camera_state_change", (data) => {
@@ -77,19 +66,6 @@ const Call = () => {
 			socket.off("camera_state_change");
 		};
 	}, [socket]);
-
-	const handleAudio = () => {
-		setToggleAudio((prev) => !prev);
-	};
-
-	const handleEndCall = () => {
-		setCallEnded(true);
-		connectionRef.current.destroy();
-		navigate("/");
-		setInterval(() => {
-			window.location.reload();
-		}, 1000);
-	};
 
 	useEffect(() => {
 		if (stream && myVideo.current && userVideo.current) {
@@ -127,18 +103,10 @@ const Call = () => {
 		};
 	}, []);
 
-	// console.log("stream: ", stream);
-	// console.log("receivingCall: ", receivingCall);
-	// console.log("callAccepted: ", callAccepted);
-	// console.log("myVideo: ", myVideo);
-
-	// console.log("myVideo.current: ", myVideo.current);
-	// console.log("userVideo.current", userVideo.current);
-
 	return (
 		<div className="w-full h-[89vh] flex flex-col items-center justify-center relative pb-40 lg:flex-row lg:gap-10">
 			{/* OTHER USER CAMERA */}
-			{callAccepted && (
+			{callAccepted && !callEnded && (
 				<div className="w-full flex items-center justify-center lg:w-96 lg:rounded-lg bg-customGray">
 					<video
 						playsInline
@@ -151,7 +119,7 @@ const Call = () => {
 			)}
 
 			{/* LOGGED IN USER CAMERA */}
-			{receivingCall && callAccepted && (
+			{receivingCall && callAccepted && !callEnded && (
 				<>
 					{toggleVideo ? (
 						<div className="absolute right-2 top-2 w-32 h-44 bg-customGray flex items-center justify-center md:w-48 md:h-60 md:right-5 md:top-5 lg:w-96 lg:h-72 lg:rounded-lg lg:static ">
@@ -172,77 +140,16 @@ const Call = () => {
 			)}
 
 			{/*INCOMMING CALL NOT ACCEPTED YET */}
-			{receivingCall && !callAccepted && (
-				<div className="w-80 flex flex-col items-center justify-center gap-4">
-					{/* <div className="w-24 h-24 rounded-full flex flex-col bg-customBlack items-center justify-center">
-						<img
-							src={`http://localhost:5000/uploads/${user.profilePicture}`}
-							alt={user.firstName + " photo"}
-							className="w-full h-full rounded-full object-contain"
-						/>
-					</div> */}
-					<div
-						className={`w-32 h-32 rounded-full flex  items-center justify-center relative ${
-							user.profilePicture
-								? "bg-customBlack"
-								: "bg-customWhite text-customBlack "
-						}`}
-					>
-						{user.profilePicture ? (
-							<img
-								src={`http://localhost:5000/uploads/${user.profilePicture}`}
-								alt=""
-								className="w-full h-full rounded-full object-contain"
-							/>
-						) : (
-							<p className="capitalize font-semibold text-5xl">
-								{user.firstName && user.firstName.charAt(0)}
-							</p>
-						)}
-					</div>
-					<div className="text-center">
-						<h2 className="capitalize">{user.firstName} {user.lastName}</h2>
-						<p>Calling...</p>
-					</div>
-				</div>
-			)}
+			{receivingCall && !callAccepted && <CallUser user={user} action="Calling..." />}
 
-			<div className="absolute bottom-10 p-2 w-80 flex items-center justify-evenly rounded-full bg-customGray">
-				{toggleVideo ? (
-					<Video
-						title="Video"
-						onClick={handleVideo}
-						className="cursor-pointer"
-					/>
-				) : (
-					<VideoOff
-						title="Video"
-						onClick={handleVideo}
-						className="cursor-pointer"
-					/>
-				)}
-				{toggleAudio ? (
-					<MicOff
-						title="Mic"
-						onClick={handleAudio}
-						className="cursor-pointer"
-					/>
-				) : (
-					<Mic
-						title="Mic"
-						onClick={handleAudio}
-						className="cursor-pointer"
-					/>
-				)}
+			{callEnded && callAccepted && <CallUser user={user} action="Call Ended" />}
 
-				<div
-					onClick={handleEndCall}
-					title="End Call"
-					className="w-11 h-11 p-3 flex items-center justify-center rounded-full cursor-pointer bg-red-600"
-				>
-					<PhoneOff />
-				</div>
-			</div>
+			{receivingCall && !callEnded && <CallControls
+				toggleAudio={toggleAudio}
+				setToggleAudio={setToggleAudio}
+				toggleVideo={toggleVideo}
+				setToggleVideo={setToggleVideo}
+			/>}
 		</div>
 	);
 };
