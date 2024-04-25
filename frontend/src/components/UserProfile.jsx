@@ -16,9 +16,6 @@ const UserProfile = () => {
 
 	const dispatch = useDispatch();
 
-	// console.log("otherUser: ", otherUser);
-	// console.log("currentUser: ", currentUser);
-
 	const handleFollow = async (id) => {
 		try {
 			const response = await axios.post(

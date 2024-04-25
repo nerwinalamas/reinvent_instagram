@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { updatePost } from "../_actions/postsAction";
 import { validatePost } from "../helpers/formValidation";
 
@@ -13,8 +13,6 @@ const UpdatePost = () => {
 
 	const [postContentError, setPostContentError] = useState("");
 	const [postPictureError, setPostPictureError] = useState("");
-
-	const theme = useSelector((state) => state.themeReducer.theme)
 
 	const dispatch = useDispatch();
 	const navigate = useNavigate();

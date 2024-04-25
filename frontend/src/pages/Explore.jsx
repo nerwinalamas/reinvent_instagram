@@ -55,9 +55,6 @@ const Explore = () => {
 							key={i}
 							src={`http://localhost:5000/uploads/${image.postPicture}`}
 							style={{ width: "100%", display: "block" }}
-							// onClick={() =>
-							// 	console.log("image: ", image + " " + i)
-							// }
 							onClick={() => {
 								document
 									.getElementById("my_modal_4")
