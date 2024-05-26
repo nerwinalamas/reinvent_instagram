@@ -1,6 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { API } from "../constants/endpoints";
 
 const SearchResult = () => {
 	const searchResults = useSelector(
@@ -17,7 +18,7 @@ const SearchResult = () => {
 							{result.profilePicture ? (
 								<div className="w-11 h-11 rounded-full flex flex-col bg-customBlack items-center justify-center">
 									<img
-										src={`http://localhost:5000/uploads/${result.profilePicture}`}
+										src={API.GET_PHOTO_URL(result.profilePicture)}
 										alt={result.firstName + " Photo"}
 										className="w-full h-full rounded-full object-contain"
 									/>

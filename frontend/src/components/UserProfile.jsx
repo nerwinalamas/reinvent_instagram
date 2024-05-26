@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { followUser, unfollowUser } from "../_actions/userAction";
+import { API } from "../constants/endpoints";
 
 import axios from "axios";
 import FollowersModal from "./FollowersModal";
@@ -19,7 +20,7 @@ const UserProfile = () => {
 	const handleFollow = async (id) => {
 		try {
 			const response = await axios.post(
-				`http://localhost:5000/follow-toggle/${id}`,
+				API.FOLLOW_TOGGLE(id),
 				{},
 				{
 					headers: {
@@ -56,7 +57,7 @@ const UserProfile = () => {
 			>
 				{otherUser.profilePicture ? (
 					<img
-						src={`http://localhost:5000/uploads/${otherUser.profilePicture}`}
+						src={API.GET_PHOTO_URL(otherUser.profilePicture)}
 						alt=""
 						className="w-full h-full rounded-full object-contain"
 					/>

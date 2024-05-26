@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useSocket } from "../context/SocketContext";
+import { API } from "../constants/endpoints";
 import CallControls from "../components/CallControls";
 import CallUser from "../components/CallUser";
 import axios from "axios";
@@ -35,7 +36,7 @@ const Call = () => {
 	const getUser = async (id) => {
 		try {
 			const response = await axios.get(
-				`http://localhost:5000/user/${id}`,
+				API.GET_USER(id),
 				{
 					headers: {
 						Authorization: `Bearer ${localStorage.getItem(
@@ -44,7 +45,6 @@ const Call = () => {
 					},
 				}
 			);
-			console.log("response sa call page: ", response);
 			setUser(response.data.data);
 		} catch (error) {
 			console.log("Call page get user error: ", error);

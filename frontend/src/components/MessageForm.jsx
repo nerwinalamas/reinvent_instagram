@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setConversation } from "../_actions/convoAction";
 import { useSocket } from "../context/SocketContext";
+import { API } from "../constants/endpoints";
 
 import axios from "axios";
 import { Send } from "lucide-react";
@@ -21,7 +22,7 @@ const MessageForm = ({ getConversation }) => {
 
 		try {
 			const response = await axios.post(
-				`http://localhost:5000/message/send/${id}`,
+				API.SEND_MESSAGE(id),
 				{ message },
 				{
 					headers: {
@@ -31,7 +32,6 @@ const MessageForm = ({ getConversation }) => {
 					},
 				}
 			);
-			console.log("response ng send: ", response);
 			if (response) {
 				socket.emit("message", { message, userId: user._id });
 				setMessage("");

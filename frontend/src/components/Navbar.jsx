@@ -1,18 +1,20 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { setSearchResults } from "../_actions/searchAction";
+import { API } from "../constants/endpoints";
 
 import CreatePost from "./CreatePost";
 import More from "./More";
 
 import { Bell, Menu, MessageCircleMore, Plus, Search } from "lucide-react";
 import axios from "axios";
-import { setSearchResults } from "../_actions/searchAction";
 
 const Navbar = () => {
-	const user = useSelector((state) => state.userReducer.user);
 	const [isOpen, setIsOpen] = useState(false);
 	const [isSearching, setIsSearching] = useState("")
+
+	const user = useSelector((state) => state.userReducer.user);
 	const theme = useSelector((state) => state.themeReducer.theme)
 
 	const navigate = useNavigate();
@@ -33,7 +35,7 @@ const Navbar = () => {
 		if (!isSearching) return
 
 		try {
-			const response = await axios.get(`http://localhost:5000/search/users?query=${isSearching}`, {
+			const response = await axios.get(API.SEARCH_USER(isSearching), {
 				headers: {
 					Authorization: `Bearer ${localStorage.getItem("token")}`,
 				},
@@ -81,7 +83,6 @@ const Navbar = () => {
 							<ul className="menu p-4 w-80 min-h-full bg-customBlack text-customWhite flex flex-col gap-3 items-center justify-center text-base">
 								<Link to="/" onClick={() => {
 									handleItemClick()
-									console.log("item click")
 								}}>
 									<li>
 										<a>Home</a>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
+import { API } from "../constants/endpoints";
 
 import axios from "axios";
 import moment from "moment";
@@ -21,7 +22,7 @@ const Explore = () => {
 	const getPosts = async () => {
 		try {
 			const response = await axios.get(
-				"http://localhost:5000/post/explore/random",
+				API.GET_EXPLORE_POSTS,
 				{
 					headers: {
 						Authorization: `Bearer ${localStorage.getItem(
@@ -30,7 +31,6 @@ const Explore = () => {
 					},
 				}
 			);
-			console.log("response sa explore: ", response);
 			setExploreData(response.data.data);
 		} catch (error) {
 			console.log("Explore Page Error: ", error);
@@ -40,8 +40,6 @@ const Explore = () => {
 	useEffect(() => {
 		getPosts();
 	}, []);
-
-	console.log("setpostdata: ", postData);
 
 	return (
 		<ResponsiveMasonry
@@ -53,7 +51,7 @@ const Explore = () => {
 					exploreData.map((image, i) => (
 						<img
 							key={i}
-							src={`http://localhost:5000/uploads/${image.postPicture}`}
+							src={API.GET_PHOTO_URL(image.postPicture)}
 							style={{ width: "100%", display: "block" }}
 							onClick={() => {
 								document
@@ -85,7 +83,7 @@ const Explore = () => {
 										{postData.postedBy.profilePicture ? (
 											<div className="w-11 h-11 rounded-full flex flex-col bg-customBlack items-center justify-center">
 												<img
-													src={`http://localhost:5000/uploads/${postData.postedBy.profilePicture}`}
+													src={API.GET_PHOTO_URL(postData.postedBy.profilePicture)}
 													alt=""
 													className="w-full h-full rounded-full object-contain"
 												/>
@@ -117,7 +115,7 @@ const Explore = () => {
 									</div>
 								</div>
 								<img
-									src={`http://localhost:5000/uploads/${postData.postPicture}`}
+									src={API.GET_PHOTO_URL(postData.postPicture)}
 									alt="Sample Image"
 									className={`md:max-h-[500px] object-contain rounded-md ${theme === "dark" ? "bg-black" : "bg-slate-200" }`}
 								/>

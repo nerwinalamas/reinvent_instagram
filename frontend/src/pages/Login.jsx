@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { validateLoginForm } from "../helpers/formValidation"
+import { API } from "../constants/endpoints";
 
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -20,7 +21,7 @@ const Login = () => {
 		if (!validateLoginForm(email, setEmailError, password, setPasswordError)) return;
 
 		try {
-			const response = await axios.post("http://localhost:5000/login", {
+			const response = await axios.post(API.LOGIN, {
 				email: email,
 				password: password,
 			});

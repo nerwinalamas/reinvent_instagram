@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { unsavedPosts } from "../_actions/userAction";
+import { API } from "../constants/endpoints";
 
 import { Bookmark } from "lucide-react";
 import axios from "axios";
@@ -17,7 +18,7 @@ const SavedPost = () => {
 	const getSavedPosts = async () => {
 		try {
 			const response = await axios.get(
-				"http://localhost:5000/post/my/personal/saved/posts",
+				API.GET_SAVED_POSTS,
 				{
 					headers: {
 						Authorization: `Bearer ${localStorage.getItem(
@@ -40,7 +41,7 @@ const SavedPost = () => {
 		try {
 			if (isSaved) {
 				const response = await axios.delete(
-					`http://localhost:5000/post/unsave/${postId}`,
+					API.UNSAVE_POST(postId),
 					{
 						headers: {
 							Authorization: `Bearer ${localStorage.getItem(
@@ -52,7 +53,7 @@ const SavedPost = () => {
 				dispatch(unsavedPosts(postId));
 			} else {
 				const response = await axios.post(
-					`http://localhost:5000/post/save/${postId}`,
+					API.SAVE_POST(postId),
 					{},
 					{
 						headers: {
@@ -87,7 +88,7 @@ const SavedPost = () => {
 									{post.postedBy.profilePicture ? (
 										<div className="w-11 h-11 rounded-full flex flex-col bg-customBlack items-center justify-center">
 											<img
-												src={`http://localhost:5000/uploads/${post.postedBy.profilePicture}`}
+												src={API.GET_PHOTO_URL(post.postedBy.profilePicture)}
 												alt={
 													post.postedBy.firstName +
 													" Photo"
@@ -123,7 +124,7 @@ const SavedPost = () => {
 						</div>
 						{/* PICTURE SECTION */}
 						<img
-							src={`http://localhost:5000/uploads/${post.postPicture}`}
+							src={API.GET_PHOTO_URL(post.postPicture)}
 							alt="Sample Image"
 							className={`xl:max-h-[500px] object-contain rounded-md ${theme === "dark" ? "bg-customBlack" : "bg-slate-200" }`}
 						/>

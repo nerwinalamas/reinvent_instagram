@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useSocket } from "../context/SocketContext";
+import { API } from "../constants/endpoints";
 
 const CallUser = ({ user, action }) => {
 	const { callEnded } = useSocket();
@@ -24,7 +25,7 @@ const CallUser = ({ user, action }) => {
 			>
 				{user?.profilePicture ? (
 					<img
-						src={`http://localhost:5000/uploads/${user?.profilePicture}`}
+						src={API.GET_PHOTO_URL(user?.profilePicture)}
 						alt=""
 						className="w-full h-full rounded-full object-contain"
 					/>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setSelectedChat } from "../_actions/convoAction";
+import { API } from "../constants/endpoints";
 
 import axios from "axios";
 import { Search } from "lucide-react";
@@ -13,7 +14,7 @@ const ChatHeads = () => {
 	const getFollowing = async () => {
 		try {
 			const response = await axios.get(
-				"http://localhost:5000/following",
+				API.FOLLOWING,
 				{
 					headers: {
 						Authorization: `Bearer ${localStorage.getItem(
@@ -46,7 +47,7 @@ const ChatHeads = () => {
 								{follow.profilePicture ? (
 									<div className="w-11 h-11 rounded-full flex flex-col bg-customBlack items-center justify-center">
 										<img
-											src={`http://localhost:5000/uploads/${follow.profilePicture}`}
+											src={API.GET_PHOTO_URL(follow.profilePicture)}
 											alt={follow.firstName + " Photo"}
 											className="w-full h-full rounded-full object-contain"
 										/>
@@ -89,7 +90,7 @@ const ChatHeads = () => {
 								{follow.profilePicture ? (
 									<div className="w-11 h-11 rounded-full flex flex-col bg-customBlack items-center justify-center">
 										<img
-											src={`http://localhost:5000/uploads/${follow.profilePicture}`}
+											src={API.GET_PHOTO_URL(follow.profilePicture)}
 											alt={follow.firstName + " Photo"}
 											className="w-full h-full rounded-full object-contain"
 										/>

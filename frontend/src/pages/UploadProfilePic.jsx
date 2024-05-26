@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setProfilePic } from "../_actions/userAction";
+import { API } from "../constants/endpoints";
 
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -27,7 +28,7 @@ const UploadProfilePic = () => {
 			formData.append("profilePicture", profilePicture);
 
 			const response = await axios.put(
-				`http://localhost:5000/user/change/${userId}`,
+				API.UPDATE_PROFILE_PHOTO(userId),
 				formData,
 				{
 					headers: {

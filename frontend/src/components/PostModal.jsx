@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { useSocket } from "../context/SocketContext";
 import { createComment, deleteComment } from "../_actions/postsAction";
+import { API } from "../constants/endpoints";
 
 import axios from "axios";
 import moment from "moment";
 import { Bookmark, MessageCircle, Redo2, ThumbsUp } from "lucide-react";
-import { setClickedOtherPost } from "../_actions/otherUserAction";
 
 const PostModal = ({
 	user,
@@ -17,17 +18,16 @@ const PostModal = ({
 }) => {
 	const [newComment, setNewComment] = useState("");
 	const theme = useSelector((state) => state.themeReducer.theme)
+	const { socket } = useSocket();
 
 	const dispatch = useDispatch();
-
-	// console.log("clickedPost: ", clickedPost)
 
 	const handleComment = async (e, postId) => {
 		e.preventDefault();
 
 		try {
 			const response = await axios.post(
-				`http://localhost:5000/post/create/comment/${postId}`,
+				API.CREATE_COMMENT(postId),
 				{ comment: newComment },
 				{
 					headers: {
@@ -38,17 +38,7 @@ const PostModal = ({
 				}
 			);
 			dispatch(createComment(postId, newComment));
-			// dispatch(setClickedPost({
-			// 	...clickedPost,
-			// 	comments: [...clickedPost.comments, newComment],
-			// }));
-			// if (setClickedPost === null) {
-			// 	dispatch(setClickedOtherPost({ ...clickedPost, comments: [...clickedPost.comments, newComment]}))
-			// } else {
-			// 	dispatch(setClickedPost({ ...clickedPost, comments: [...clickedPost.comments, newComment]}));
-			// }
-			
-			document.getElementById("post_modal").close();
+			// document.getElementById("post_modal").close();
 			setNewComment("");
 		} catch (error) {
 			console.log("Comment in a Creating Post Error: ", error);
@@ -58,7 +48,7 @@ const PostModal = ({
 	const handleDeleteComment = async (postId, commentId) => {
 		try {
 			const response = await axios.delete(
-				`http://localhost:5000/post/${postId}/comment/${commentId}`,
+				API.DELETE_COMMENT(postId, commentId),
 				{
 					headers: {
 						Authorization: `Bearer ${localStorage.getItem(
@@ -97,7 +87,7 @@ const PostModal = ({
 								{clickedPost.postedBy.profilePicture ? (
 									<div className="w-11 h-11 rounded-full flex flex-col bg-customBlack items-center justify-center">
 										<img
-											src={`http://localhost:5000/uploads/${clickedPost.postedBy.profilePicture}`}
+											src={API.GET_PHOTO_URL(clickedPost.postedBy.profilePicture)}
 											alt=""
 											className="w-full h-full rounded-full object-contain"
 										/>
@@ -128,7 +118,7 @@ const PostModal = ({
 						{/* CONTENT SECTION */}
 						<div className="h-[60vh] overflow-y-auto flex flex-col gap-5 lg:flex-row">
 							<img
-								src={`http://localhost:5000/uploads/${clickedPost.postPicture}`}
+								src={API.GET_PHOTO_URL(clickedPost.postPicture)}
 								alt="Sample Image"
 								className={`h-80 xl:max-h-[500px] object-contain rounded-md lg:h-full lg:w-[50vw] xl:w-full ${theme === "dark" ? "bg-black" : "bg-slate-200" }`}
 							/>

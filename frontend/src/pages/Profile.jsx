@@ -11,6 +11,7 @@ import {
 	unlikeOtherPost,
 	unsavedOtherPosts,
 } from "../_actions/otherUserAction";
+import { API } from "../constants/endpoints";
 import axios from "axios";
 
 import PostModal from "../components/PostModal";
@@ -39,7 +40,7 @@ const Profile = () => {
 	const getUser = async (userId) => {
 		try {
 			const response = await axios.get(
-				`http://localhost:5000/user/${userId}`,
+				API.GET_USER(userId),
 				{
 					headers: {
 						Authorization: `Bearer ${localStorage.getItem(
@@ -61,7 +62,7 @@ const Profile = () => {
 	const getPosts = async (userId) => {
 		try {
 			const response = await axios.get(
-				`http://localhost:5000/post/user/${userId}`,
+				API.GET_USER_POSTS(userId),
 				{
 					headers: {
 						Authorization: `Bearer ${localStorage.getItem(
@@ -89,7 +90,7 @@ const Profile = () => {
 		try {
 			if (isLiked) {
 				const response = await axios.post(
-					`http://localhost:5000/post/${postId}/unlike`,
+					API.UNLIKE_POST(postId),
 					{},
 					{
 						headers: {
@@ -112,7 +113,7 @@ const Profile = () => {
 				);
 			} else {
 				const response = await axios.post(
-					`http://localhost:5000/post/${postId}/like`,
+					API.LIKE_POST(postId),
 					{},
 					{
 						headers: {
@@ -140,7 +141,7 @@ const Profile = () => {
 		try {
 			if (isSaved) {
 				const response = await axios.delete(
-					`http://localhost:5000/post/unsave/${postId}`,
+					API.UNSAVE_POST(postId),
 					{
 						headers: {
 							Authorization: `Bearer ${localStorage.getItem(
@@ -162,7 +163,7 @@ const Profile = () => {
 				);
 			} else {
 				const response = await axios.post(
-					`http://localhost:5000/post/save/${postId}`,
+					API.SAVE_POST(postId),
 					{},
 					{
 						headers: {
@@ -206,7 +207,7 @@ const Profile = () => {
 							<PostUserInfo post={post} user={user} />
 							{/* PICTURE SECTION */}
 							<img
-								src={`http://localhost:5000/uploads/${post.postPicture}`}
+								src={API.GET_PHOTO_URL(post.postPicture)}
 								alt="Sample Image"
 								className={`xl:max-h-[500px] object-contain rounded-md ${
 									theme === "dark"

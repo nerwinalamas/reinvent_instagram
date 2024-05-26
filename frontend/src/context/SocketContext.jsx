@@ -5,6 +5,7 @@ import React, {
 	useRef,
 	useState,
 } from "react";
+import { API_URL } from "../constants/endpoints";
 import io from "socket.io-client";
 
 const SocketContext = createContext();
@@ -28,7 +29,7 @@ export const SocketProvider = ({ children }) => {
 	const [ callerSignal, setCallerSignal ] = useState()
 
 	useEffect(() => {
-		const newSocket = io("http://localhost:5000");
+		const newSocket = io(API_URL);
 		setSocket(newSocket);
 
 		return () => {

@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setConversation, setSelectedChat } from "../_actions/convoAction";
 import { useSocket } from "../context/SocketContext";
+import { API } from "../constants/endpoints";
 import axios from "axios";
 
 import MessageForm from "../components/MessageForm";
@@ -24,7 +25,6 @@ const Messages = () => {
 			socket.emit("userConnected", user._id);
 
 			socket.on("mensahe", (data) => {
-				console.log("mensahe: ", data);
 				dispatch(setConversation([...convo, data]));
 			});
 
@@ -45,7 +45,7 @@ const Messages = () => {
 	const getConversation = async (id) => {
 		try {
 			const response = await axios.get(
-				`http://localhost:5000/message/${id}`,
+				API.GET_CONVERSATION(id),
 				{
 					headers: {
 						Authorization: `Bearer ${localStorage.getItem(

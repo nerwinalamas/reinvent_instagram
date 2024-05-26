@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { validatePost } from "../helpers/formValidation";
+import { API } from "../constants/endpoints";
 
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -33,7 +34,7 @@ const CreatePost = () => {
 			formData.append("postPicture", postPicture);
 
 			const response = await axios.post(
-				"http://localhost:5000/post/create",
+				API.CREATE_POST,
 				formData,
 				{
 					headers: {
@@ -44,7 +45,6 @@ const CreatePost = () => {
 					},
 				}
 			);
-			console.log("Post created successfully:", response.data);
 			if (response) {
 				setPostContent("");
 				document.getElementById("postPicture").value = null;

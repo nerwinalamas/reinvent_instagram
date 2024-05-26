@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { deletePost } from "../_actions/postsAction";
+import { API } from "../constants/endpoints";
 
 import axios from "axios";
 import moment from "moment";
@@ -15,7 +16,7 @@ const PostUserInfo = ({ post, user }) => {
 	const handleDelete = async (id) => {
 		try {
 			const response = await axios.delete(
-				`http://localhost:5000/post/${id}`,
+				API.DELETE_POST(id),
 				{
 					headers: {
 						Authorization: `Bearer ${localStorage.getItem(
@@ -37,7 +38,7 @@ const PostUserInfo = ({ post, user }) => {
 					{post.postedBy.profilePicture ? (
 						<div className="w-11 h-11 rounded-full flex flex-col bg-customBlack items-center justify-center">
 							<img
-								src={`http://localhost:5000/uploads/${post.postedBy.profilePicture}`}
+								src={API.GET_PHOTO_URL(post.postedBy.profilePicture)}
 								alt={post.postedBy.firstName + " Photo"}
 								className="w-full h-full rounded-full object-contain"
 							/>

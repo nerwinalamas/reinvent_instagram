@@ -8,12 +8,13 @@ import {
 	setPosts,
 	unlikePost,
 } from "../_actions/postsAction";
+import { API } from "../constants/endpoints";
 
 import PostUserInfo from "../components/PostUserInfo";
 import PostReaction from "../components/PostReaction";
 import PostModal from "../components/PostModal";
 
-import axios from "axios";
+import axios from "axios"; 
 
 const Home = () => {
 	const posts = useSelector((state) => state.postReducer.posts);
@@ -32,7 +33,7 @@ const Home = () => {
 
 	const fetchUser = async () => {
 		try {
-			const response = await axios.get("http://localhost:5000/get-user", {
+			const response = await axios.get(API.LOGGED_IN_USER, {
 				headers: {
 					Authorization: `Bearer ${localStorage.getItem("token")}`,
 				},
@@ -49,7 +50,7 @@ const Home = () => {
 
 	const getPosts = async () => {
 		try {
-			const response = await axios.get("http://localhost:5000/post", {
+			const response = await axios.get(API.GET_POSTS, {
 				headers: {
 					Authorization: `Bearer ${localStorage.getItem("token")}`,
 				},
@@ -73,7 +74,7 @@ const Home = () => {
 		try {
 			if (isLiked) {
 				const response = await axios.post(
-					`http://localhost:5000/post/${id}/unlike`,
+					API.UNLIKE_POST(id),
 					{},
 					{
 						headers: {
@@ -92,7 +93,7 @@ const Home = () => {
 				);
 			} else {
 				const response = await axios.post(
-					`http://localhost:5000/post/${id}/like`,
+					API.LIKE_POST(id),
 					{},
 					{
 						headers: {
@@ -119,7 +120,7 @@ const Home = () => {
 		try {
 			if (isSaved) {
 				const response = await axios.delete(
-					`http://localhost:5000/post/unsave/${postId}`,
+					API.UNSAVE_POST(postId),
 					{
 						headers: {
 							Authorization: `Bearer ${localStorage.getItem(
@@ -140,7 +141,7 @@ const Home = () => {
 				);
 			} else {
 				const response = await axios.post(
-					`http://localhost:5000/post/save/${postId}`,
+					API.SAVE_POST(postId),
 					{},
 					{
 						headers: {
@@ -176,7 +177,7 @@ const Home = () => {
 						<PostUserInfo post={post} user={user} />
 						{/* PICTURE SECTION */}
 						<img
-							src={`http://localhost:5000/uploads/${post.postPicture}`}
+							src={API.GET_PHOTO_URL(post.postPicture)}
 							alt="post photo"
 							className={`xl:max-h-[500px] object-contain rounded-md ${theme === "dark" ? "bg-customBlack" : "bg-slate-200" }`}
 						/>

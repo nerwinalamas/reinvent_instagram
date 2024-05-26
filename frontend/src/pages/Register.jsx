@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { validateRegistrationForm } from "../helpers/formValidation";
+import { API } from "../constants/endpoints";
 
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -41,7 +42,7 @@ const Register = () => {
 
 		try {
 			const response = await axios.post(
-				"http://localhost:5000/register",
+				API.REGISTER,
 				{
 					email,
 					firstName,

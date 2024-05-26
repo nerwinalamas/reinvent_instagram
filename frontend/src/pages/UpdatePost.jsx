@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { updatePost } from "../_actions/postsAction";
 import { validatePost } from "../helpers/formValidation";
+import { API } from "../constants/endpoints";
 
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -20,7 +21,7 @@ const UpdatePost = () => {
 	const getPost = async () => {
 		try {
 			const response = await axios.get(
-				`http://localhost:5000/post/${id}`,
+				API.READ_POST(id),
 				{
 					headers: {
 						Authorization: `Bearer ${localStorage.getItem(
@@ -29,7 +30,6 @@ const UpdatePost = () => {
 					},
 				}
 			);
-			console.log("response sa update: ", response.data.data);
 			setData(response.data.data);
 		} catch (error) {
 			console.error("Error fetching post:", error);
@@ -59,7 +59,7 @@ const UpdatePost = () => {
 			formData.append("postPicture", data.postPicture);
 
 			const response = await axios.put(
-				`http://localhost:5000/post/${id}`,
+				API.UPDATE_POST(id),
 				formData,
 				{
 					headers: {
@@ -70,7 +70,6 @@ const UpdatePost = () => {
 					},
 				}
 			);
-			console.log("Post updated successfully!", response.data.data);
 			dispatch(updatePost(response.data.data._id, response.data.data));
 
 			if (response) {
