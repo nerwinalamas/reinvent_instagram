@@ -1,12 +1,8 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { savedPosts, setUser, unsavedPosts } from "../_actions/userAction";
-import {
-	likePost,
-	setClickedPost,
-	unlikePost,
-} from "../_actions/postsAction";
+import { setUser } from "../_actions/userAction";
+import { setClickedPost } from "../_actions/postsAction";
 import { API } from "../constants/endpoints";
 
 import PostUserInfo from "../components/PostUserInfo";
@@ -16,14 +12,22 @@ import PostModal from "../components/PostModal";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { getPosts } from "../api/post";
-import { useLikePostMutation, useUnLikePostMutation } from "../mutation/post";
+import {
+	useLikePostMutation,
+	useSavePostMutation,
+	useUnLikePostMutation,
+	useUnsavePostMutation,
+} from "../mutation/post";
 
 const Home = () => {
 	const user = useSelector((state) => state.userReducer.user);
 	const clickedPost = useSelector((state) => state.postReducer.clickedPost);
 	const theme = useSelector((state) => state.themeReducer.theme);
+
 	const likePostMutation = useLikePostMutation();
 	const unlikePostMutation = useUnLikePostMutation();
+	const savePostMutation = useSavePostMutation();
+	const unsavePostMutation = useUnsavePostMutation();
 
 	const { data, isLoading, isError, error } = useQuery({
 		queryKey: ["posts"],
@@ -61,60 +65,27 @@ const Home = () => {
 		document.getElementById("post_modal").showModal();
 	};
 
-	const handleLike = async (postId, isLiked) => {
+	const handleLike = (postId, isLiked) => {
 		try {
 			if (isLiked) {
-				unlikePostMutation.mutate(postId)
+				unlikePostMutation.mutate(postId);
 			} else {
-				likePostMutation.mutate(postId)
+				likePostMutation.mutate(postId);
 			}
 		} catch (error) {
 			console.log("Like/Unlike Post Error: ", error);
 		}
 	};
 
-	const handleSavePost = async (postId, isSaved) => {
+	const handleSavePost = (postId, isSaved) => {
 		try {
 			if (isSaved) {
-				const response = await axios.delete(API.UNSAVE_POST(postId), {
-					headers: {
-						Authorization: `Bearer ${localStorage.getItem(
-							"token"
-						)}`,
-					},
-				});
-				dispatch(unsavedPosts(postId));
-				const updatedSavedPosts = clickedPost.savedPosts.filter(
-					(savedPostId) => savedPostId !== postId
-				);
-				dispatch(
-					setClickedPost({
-						...clickedPost,
-						savedPosts: updatedSavedPosts,
-					})
-				);
+				unsavePostMutation.mutate(postId);
 			} else {
-				const response = await axios.post(
-					API.SAVE_POST(postId),
-					{},
-					{
-						headers: {
-							Authorization: `Bearer ${localStorage.getItem(
-								"token"
-							)}`,
-						},
-					}
-				);
-				dispatch(savedPosts(postId));
-				dispatch(
-					setClickedPost({
-						...clickedPost,
-						savedPosts: [...clickedPost.savedPosts, postId],
-					})
-				);
+				savePostMutation.mutate(postId);
 			}
 		} catch (error) {
-			console.log("Save Post Error: ", error);
+			console.log("Save/Unsave Post Error: ", error);
 		}
 	};
 
