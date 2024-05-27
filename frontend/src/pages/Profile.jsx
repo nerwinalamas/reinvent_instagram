@@ -18,7 +18,8 @@ import PostModal from "../components/PostModal";
 import PostReaction from "../components/PostReaction";
 import PostUserInfo from "../components/PostUserInfo";
 import UserProfile from "../components/UserProfile";
-
+import { useQuery } from "@tanstack/react-query";
+import { getUserPosts } from "../api/post";
 
 const Profile = () => {
 	const { id } = useParams();
@@ -33,22 +34,21 @@ const Profile = () => {
 	);
 
 	const currentUser = useSelector((state) => state.userReducer.user);
-	// const clickedPost = useSelector((state) => state.postReducer.clickedPost);
 	const theme = useSelector((state) => state.themeReducer.theme);
 	const dispatch = useDispatch();
 
+	const { data, isLoading, isError, error } = useQuery({
+		queryKey: ["userPosts", id],
+		queryFn: () => getUserPosts(id),
+	});
+
 	const getUser = async (userId) => {
 		try {
-			const response = await axios.get(
-				API.GET_USER(userId),
-				{
-					headers: {
-						Authorization: `Bearer ${localStorage.getItem(
-							"token"
-						)}`,
-					},
-				}
-			);
+			const response = await axios.get(API.GET_USER(userId), {
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem("token")}`,
+				},
+			});
 			dispatch(setOtherUser(response.data.data));
 		} catch (error) {
 			console.log("Get User Profile Error: ", error);
@@ -58,28 +58,6 @@ const Profile = () => {
 	useEffect(() => {
 		getUser(id);
 	}, [id, user]);
-
-	const getPosts = async (userId) => {
-		try {
-			const response = await axios.get(
-				API.GET_USER_POSTS(userId),
-				{
-					headers: {
-						Authorization: `Bearer ${localStorage.getItem(
-							"token"
-						)}`,
-					},
-				}
-			);
-			dispatch(setOtherUserPosts(response.data.data));
-		} catch (error) {
-			console.log("Get Posts Error: ", error);
-		}
-	};
-
-	useEffect(() => {
-		getPosts(id);
-	}, [otherUserPosts, dispatch, user._id]);
 
 	const handleClick = (post) => {
 		dispatch(setClickedOtherPost(post));
@@ -140,16 +118,13 @@ const Profile = () => {
 	const handleSavePost = async (postId, isSaved) => {
 		try {
 			if (isSaved) {
-				const response = await axios.delete(
-					API.UNSAVE_POST(postId),
-					{
-						headers: {
-							Authorization: `Bearer ${localStorage.getItem(
-								"token"
-							)}`,
-						},
-					}
-				);
+				const response = await axios.delete(API.UNSAVE_POST(postId), {
+					headers: {
+						Authorization: `Bearer ${localStorage.getItem(
+							"token"
+						)}`,
+					},
+				});
 				dispatch(unsavedOtherPosts(postId));
 				dispatch(unsavedPosts(postId));
 				const updatedSavedPosts = clickedOtherPost.savedPosts.filter(
@@ -193,8 +168,12 @@ const Profile = () => {
 			<UserProfile />
 			{/* USER POSTS */}
 			<div className="flex flex-col items-center gap-5 pb-10">
-				{otherUserPosts.length > 0 ? (
-					otherUserPosts.map((post) => (
+				{isLoading ? (
+					<p>Loading...</p>
+				) : isError ? (
+					<p>Error: {error}</p>
+				) : data.length > 0 ? (
+					data.map((post) => (
 						<div
 							key={post._id}
 							className={`w-80 p-3  rounded-md flex flex-col gap-2 md:w-96 md:gap-5 lg:p-5 xl:w-[600px] xl:gap-1 ${
