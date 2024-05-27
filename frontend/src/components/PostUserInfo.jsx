@@ -10,21 +10,16 @@ import { Ellipsis } from "lucide-react";
 
 const PostUserInfo = ({ post, user }) => {
 	const theme = useSelector((state) => state.themeReducer.theme);
-	const currentUser = useSelector((state) => state.userReducer.user)
+	const currentUser = useSelector((state) => state.userReducer.user);
 	const dispatch = useDispatch();
 
 	const handleDelete = async (id) => {
 		try {
-			const response = await axios.delete(
-				API.DELETE_POST(id),
-				{
-					headers: {
-						Authorization: `Bearer ${localStorage.getItem(
-							"token"
-						)}`,
-					},
-				}
-			);
+			const response = await axios.delete(API.DELETE_POST(id), {
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem("token")}`,
+				},
+			});
 			dispatch(deletePost(response.data.data));
 		} catch (error) {
 			console.log("Get Posts Error: ", error);
@@ -38,7 +33,9 @@ const PostUserInfo = ({ post, user }) => {
 					{post.postedBy.profilePicture ? (
 						<div className="w-11 h-11 rounded-full flex flex-col bg-customBlack items-center justify-center">
 							<img
-								src={API.GET_PHOTO_URL(post.postedBy.profilePicture)}
+								src={API.GET_PHOTO_URL(
+									post.postedBy.profilePicture
+								)}
 								alt={post.postedBy.firstName + " Photo"}
 								className="w-full h-full rounded-full object-contain"
 							/>
@@ -78,11 +75,9 @@ const PostUserInfo = ({ post, user }) => {
 							theme === "dark" ? "bg-customGray" : "bg-slate-100"
 						}`}
 					>
-						<Link to={`/post/update/${post._id}`}>
-							<li>
-								<a>Update</a>
-							</li>
-						</Link>
+						<li>
+							<Link to={`/post/update/${post._id}`}>Update</Link>
+						</li>
 						<li>
 							<a onClick={() => handleDelete(post._id)}>Delete</a>
 						</li>
