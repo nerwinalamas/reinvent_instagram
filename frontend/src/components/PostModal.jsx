@@ -1,12 +1,14 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { Link, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { API } from "../constants/endpoints";
 import moment from "moment";
 import { Bookmark, MessageCircle, Redo2, ThumbsUp } from "lucide-react";
 import {
 	useCommentPostMutation,
+	useCommentPostProfileMutation,
 	useDeleteCommentPostMutation,
+	useDeleteCommentPostProfileMutation,
 } from "../mutation/post";
 import toast from "react-hot-toast";
 
@@ -17,26 +19,32 @@ const PostModal = ({
 	handleLike,
 	handleSavePost,
 }) => {
+	const location = useLocation();
 	const [newComment, setNewComment] = useState("");
 	const theme = useSelector((state) => state.themeReducer.theme);
 	const createCommentMutation = useCommentPostMutation();
 	const deleteCommentMutation = useDeleteCommentPostMutation();
-
-	const dispatch = useDispatch();
+	const createCommentProfileMutation = useCommentPostProfileMutation();
+	const deleteCommentProfileMutation = useDeleteCommentPostProfileMutation();
 
 	const handleComment = async (e, postId) => {
 		e.preventDefault();
 
 		try {
-			createCommentMutation.mutate(
-				{ postId, comment: newComment },
-				{
-					onSuccess: () => {
-						setNewComment("");
-						document.getElementById("post_modal").close(); // BAD FOR UX
-					},
-				}
-			);
+			if (location.pathname === "/") {
+				await createCommentMutation.mutateAsync({
+					postId,
+					comment: newComment,
+				});
+			} else {
+				await createCommentProfileMutation.mutateAsync({
+					postId,
+					comment: newComment,
+				});
+			}
+
+			setNewComment("");
+			document.getElementById("post_modal").close(); // BAD FOR UX
 		} catch (error) {
 			console.log("Create Comment Error: ", error);
 		}
@@ -44,15 +52,14 @@ const PostModal = ({
 
 	const handleDeleteComment = async (postId, commentId) => {
 		try {
-			deleteCommentMutation.mutate(
-				{ postId, commentId },
-				{
-					onSuccess: () => {
-						toast.success("Deleting Comment Successfully!");
-						document.getElementById("post_modal").close(); // BAD FOR UX
-					},
-				}
-			);
+			if (location.pathname === "/") {
+				deleteCommentMutation.mutate({ postId, commentId });
+			} else {
+				deleteCommentProfileMutation.mutate({ postId, commentId });
+			}
+
+			toast.success("Deleting Comment Successfully!");
+			document.getElementById("post_modal").close(); // BAD FOR UX
 		} catch (error) {
 			console.log("Deleting Comment Error: ", error);
 		}
@@ -226,9 +233,6 @@ const PostModal = ({
 												{comment.postedBy._id ===
 													user._id && (
 													<div className="flex gap-5 text-xs self-end pr-5">
-														{/* <p className="text-green-500 hover:underline cursor-pointer">
-																			Update
-																		</p> */}
 														<p
 															onClick={() =>
 																handleDeleteComment(
