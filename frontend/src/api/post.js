@@ -65,6 +65,20 @@ export const updatePost = async (postId, postContent, postPicture) => {
     }
 };
 
+export const deletePost = async (postId) => {
+    try {
+        const response = await axios.delete(API.DELETE_POST(postId), {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+        });
+
+        return response.data.data
+    } catch (error) {
+        console.log("Deleting Post Error: ", error);
+    }
+};
+
 export const getUserPosts = async (userId) => {
     try {
         const response = await axios.get(
