@@ -1,16 +1,7 @@
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { savedPosts, unsavedPosts } from "../_actions/userAction";
-import {
-	likeOtherPost,
-	savedOtherPosts,
-	setClickedOtherPost,
-	setOtherUser,
-	setOtherUserPosts,
-	unlikeOtherPost,
-	unsavedOtherPosts,
-} from "../_actions/otherUserAction";
+import { setClickedOtherPost, setOtherUser } from "../_actions/otherUserAction";
 import { API } from "../constants/endpoints";
 import axios from "axios";
 
@@ -20,15 +11,18 @@ import PostUserInfo from "../components/PostUserInfo";
 import UserProfile from "../components/UserProfile";
 import { useQuery } from "@tanstack/react-query";
 import { getUserPosts } from "../api/post";
+import {
+	useLikePostProfileMutation,
+	useSavePostProfileMutation,
+	useUnLikePostProfileMutation,
+	useUnsavePostProfileMutation,
+} from "../mutation/post";
 
 const Profile = () => {
 	const { id } = useParams();
 
 	// otherUser
 	const user = useSelector((state) => state.otherUserReducer.otherUser);
-	const otherUserPosts = useSelector(
-		(state) => state.otherUserReducer.otherUserPosts
-	);
 	const clickedOtherPost = useSelector(
 		(state) => state.otherUserReducer.clickedOtherPost
 	);
@@ -36,6 +30,11 @@ const Profile = () => {
 	const currentUser = useSelector((state) => state.userReducer.user);
 	const theme = useSelector((state) => state.themeReducer.theme);
 	const dispatch = useDispatch();
+
+	const likePostMutation = useLikePostProfileMutation();
+	const unlikePostMutation = useUnLikePostProfileMutation();
+	const savePostMutation = useSavePostProfileMutation();
+	const unsavePostMutation = useUnsavePostProfileMutation();
 
 	const { data, isLoading, isError, error } = useQuery({
 		queryKey: ["userPosts", id],
@@ -67,98 +66,24 @@ const Profile = () => {
 	const handleLike = async (postId, isLiked) => {
 		try {
 			if (isLiked) {
-				const response = await axios.post(
-					API.UNLIKE_POST(postId),
-					{},
-					{
-						headers: {
-							Authorization: `Bearer ${localStorage.getItem(
-								"token"
-							)}`,
-						},
-					}
-				);
-				// dispatch(unlikePost(postId, currentUser._id));
-				dispatch(unlikeOtherPost(postId, currentUser._id));
-				const updatedLikes = clickedOtherPost.likes.filter(
-					(likeId) => likeId !== user._id
-				);
-				dispatch(
-					setClickedOtherPost({
-						...clickedOtherPost,
-						likes: updatedLikes,
-					})
-				);
+				unlikePostMutation.mutate(postId);
 			} else {
-				const response = await axios.post(
-					API.LIKE_POST(postId),
-					{},
-					{
-						headers: {
-							Authorization: `Bearer ${localStorage.getItem(
-								"token"
-							)}`,
-						},
-					}
-				);
-				// dispatch(likePost(postId, currentUser._id));
-				dispatch(likeOtherPost(postId, currentUser._id));
-				dispatch(
-					setClickedOtherPost({
-						...clickedOtherPost,
-						likes: [...clickedOtherPost.likes, currentUser._id],
-					})
-				);
+				likePostMutation.mutate(postId);
 			}
 		} catch (error) {
-			console.log("Like Posts Error: ", error);
+			console.log("Like/Unlike Post Error: ", error);
 		}
 	};
 
-	const handleSavePost = async (postId, isSaved) => {
+	const handleSavePost = (postId, isSaved) => {
 		try {
 			if (isSaved) {
-				const response = await axios.delete(API.UNSAVE_POST(postId), {
-					headers: {
-						Authorization: `Bearer ${localStorage.getItem(
-							"token"
-						)}`,
-					},
-				});
-				dispatch(unsavedOtherPosts(postId));
-				dispatch(unsavedPosts(postId));
-				const updatedSavedPosts = clickedOtherPost.savedPosts.filter(
-					(savedPostId) => savedPostId !== postId
-				);
-				dispatch(
-					setClickedOtherPost({
-						...clickedOtherPost,
-						savedPosts: updatedSavedPosts,
-					})
-				);
+				unsavePostMutation.mutate(postId);
 			} else {
-				const response = await axios.post(
-					API.SAVE_POST(postId),
-					{},
-					{
-						headers: {
-							Authorization: `Bearer ${localStorage.getItem(
-								"token"
-							)}`,
-						},
-					}
-				);
-				dispatch(savedOtherPosts(postId));
-				dispatch(savedPosts(postId));
-				dispatch(
-					setClickedOtherPost({
-						...clickedOtherPost,
-						savedPosts: [...clickedOtherPost.savedPosts, postId],
-					})
-				);
+				savePostMutation.mutate(postId);
 			}
 		} catch (error) {
-			console.log("Save Post Error: ", error);
+			console.log("Save/Unsave Post Error: ", error);
 		}
 	};
 
