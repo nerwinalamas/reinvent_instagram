@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useSocket } from "../context/SocketContext";
-import { createComment, deleteComment } from "../_actions/postsAction";
+import { deleteComment } from "../_actions/postsAction";
 import { API } from "../constants/endpoints";
 
 import axios from "axios";
 import moment from "moment";
 import { Bookmark, MessageCircle, Redo2, ThumbsUp } from "lucide-react";
+import { useCommentPostMutation } from "../mutation/post";
 
 const PostModal = ({
 	user,
@@ -17,8 +17,8 @@ const PostModal = ({
 	handleSavePost,
 }) => {
 	const [newComment, setNewComment] = useState("");
-	const theme = useSelector((state) => state.themeReducer.theme)
-	const { socket } = useSocket();
+	const theme = useSelector((state) => state.themeReducer.theme);
+	const createCommentMutation = useCommentPostMutation();
 
 	const dispatch = useDispatch();
 
@@ -26,22 +26,17 @@ const PostModal = ({
 		e.preventDefault();
 
 		try {
-			const response = await axios.post(
-				API.CREATE_COMMENT(postId),
-				{ comment: newComment },
+			createCommentMutation.mutate(
+				{ postId, comment: newComment },
 				{
-					headers: {
-						Authorization: `Bearer ${localStorage.getItem(
-							"token"
-						)}`,
+					onSuccess: () => {
+						setNewComment("");
+						document.getElementById("post_modal").close(); // BAD FOR UX
 					},
 				}
 			);
-			dispatch(createComment(postId, newComment));
-			// document.getElementById("post_modal").close();
-			setNewComment("");
 		} catch (error) {
-			console.log("Comment in a Creating Post Error: ", error);
+			console.log("Create Comment Error: ", error);
 		}
 	};
 
@@ -71,7 +66,11 @@ const PostModal = ({
 
 	return (
 		<dialog id="post_modal" className="modal">
-			<div className={`modal-box w-11/12 max-h-[90vh] max-w-5xl  ${theme === "dark" ? "bg-customBlack" : "bg-slate-100" }`}>
+			<div
+				className={`modal-box w-11/12 max-h-[90vh] max-w-5xl  ${
+					theme === "dark" ? "bg-customBlack" : "bg-slate-100"
+				}`}
+			>
 				<form method="dialog">
 					<button
 						onClick={() => setClickedPost(null)}
@@ -87,7 +86,10 @@ const PostModal = ({
 								{clickedPost.postedBy.profilePicture ? (
 									<div className="w-11 h-11 rounded-full flex flex-col bg-customBlack items-center justify-center">
 										<img
-											src={API.GET_PHOTO_URL(clickedPost.postedBy.profilePicture)}
+											src={API.GET_PHOTO_URL(
+												clickedPost.postedBy
+													.profilePicture
+											)}
 											alt=""
 											className="w-full h-full rounded-full object-contain"
 										/>
@@ -120,7 +122,11 @@ const PostModal = ({
 							<img
 								src={API.GET_PHOTO_URL(clickedPost.postPicture)}
 								alt="Sample Image"
-								className={`h-80 xl:max-h-[500px] object-contain rounded-md lg:h-full lg:w-[50vw] xl:w-full ${theme === "dark" ? "bg-black" : "bg-slate-200" }`}
+								className={`h-80 xl:max-h-[500px] object-contain rounded-md lg:h-full lg:w-[50vw] xl:w-full ${
+									theme === "dark"
+										? "bg-black"
+										: "bg-slate-200"
+								}`}
 							/>
 
 							<div className="flex flex-col gap-3 mt-2 lg:hidden">
@@ -133,12 +139,20 @@ const PostModal = ({
 											onClick={() =>
 												handleLike(
 													clickedPost._id,
-													clickedPost.likes.some(like => like._id === user._id)
+													clickedPost.likes.some(
+														(like) =>
+															like._id ===
+															user._id
+													)
 												)
 											}
-											color={clickedPost.likes.some(like => like._id === user._id)
-												? "green"
-												: "white"
+											color={
+												clickedPost.likes.some(
+													(like) =>
+														like._id === user._id
+												)
+													? "green"
+													: "white"
 											}
 										/>
 										<MessageCircle
@@ -187,31 +201,53 @@ const PostModal = ({
 												key={comment._id}
 												className="flex flex-col gap-1"
 											>
-												<div className={`flex flex-col gap-1 text-sm p-2 rounded-md  ${theme === "dark" ? "bg-slate-800" : "bg-slate-200" }`}>
+												<div
+													className={`flex flex-col gap-1 text-sm p-2 rounded-md  ${
+														theme === "dark"
+															? "bg-slate-800"
+															: "bg-slate-200"
+													}`}
+												>
 													<p className="hover:underline font-bold cursor-pointer capitalize">
-														{comment.postedBy.firstName} {comment.postedBy.lastName}
- 													</p>
-													<p className={`${theme === "dark" ? "text-slate-200" : "text-customBlack"}`}>
+														{
+															comment.postedBy
+																.firstName
+														}{" "}
+														{
+															comment.postedBy
+																.lastName
+														}
+													</p>
+													<p
+														className={`${
+															theme === "dark"
+																? "text-slate-200"
+																: "text-customBlack"
+														}`}
+													>
 														{comment.comment &&
 															comment.comment}
 													</p>
 												</div>
-												{comment.postedBy._id === user._id && <div className="flex gap-5 text-xs self-end pr-5">
-													{/* <p className="text-green-500 hover:underline cursor-pointer">
+												{comment.postedBy._id ===
+													user._id && (
+													<div className="flex gap-5 text-xs self-end pr-5">
+														{/* <p className="text-green-500 hover:underline cursor-pointer">
 																			Update
 																		</p> */}
-													<p
-														onClick={() =>
-															handleDeleteComment(
-																clickedPost._id,
-																comment._id
-															)
-														}
-														className="text-red-500 hover:underline cursor-pointer"
-													>
-														Delete
-													</p>
-												</div>}
+														<p
+															onClick={() =>
+																handleDeleteComment(
+																	clickedPost._id,
+																	comment._id
+																)
+															}
+															className="text-red-500 hover:underline cursor-pointer"
+														>
+															Delete
+														</p>
+													</div>
+												)}
 											</div>
 										))
 									) : (
@@ -230,12 +266,18 @@ const PostModal = ({
 										onClick={() =>
 											handleLike(
 												clickedPost._id,
-												clickedPost.likes.some(like => like._id === user._id)
+												clickedPost.likes.some(
+													(like) =>
+														like._id === user._id
+												)
 											)
 										}
-										color={clickedPost.likes.some(like => like._id === user._id)
-											? "green"
-											: "white"
+										color={
+											clickedPost.likes.some(
+												(like) => like._id === user._id
+											)
+												? "green"
+												: "white"
 										}
 									/>
 									<MessageCircle
@@ -284,7 +326,11 @@ const PostModal = ({
 								id="comment"
 								value={newComment}
 								onChange={(e) => setNewComment(e.target.value)}
-								className={`w-full p-2 rounded-sm border ${theme === "dark" ? "bg-customBlack" : "bg-slate-200" }`}
+								className={`w-full p-2 rounded-sm border ${
+									theme === "dark"
+										? "bg-customBlack"
+										: "bg-slate-200"
+								}`}
 							/>
 							<input
 								type="submit"
