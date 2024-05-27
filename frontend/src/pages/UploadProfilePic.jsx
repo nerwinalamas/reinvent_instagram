@@ -1,49 +1,33 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { setProfilePic } from "../_actions/userAction";
-import { API } from "../constants/endpoints";
-
-import axios from "axios";
+import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
+import { useUpdateProfilePhotoMutation } from "../mutation/user";
 
 const UploadProfilePic = () => {
 	const [profilePicture, setProfilePicture] = useState(null);
 	const [profilePictureError, setProfilePictureError] = useState("");
 
 	const currentUser = useSelector((state) => state.userReducer.user);
-	const dispatch = useDispatch();
 	const navigate = useNavigate();
+
+	const updateProfilePhotoMutation = useUpdateProfilePhotoMutation();
 
 	const handleChangeProfilePic = async (e, userId) => {
 		e.preventDefault();
 
+		const profilePicture = e.target.profilePicture.files[0];
+
 		try {
-			// if (!profilePicture) {
-			// 	setProfilePictureError("Please select a profile picture.");
-			// 	return;
-			// }
-
-			const formData = new FormData();
-			formData.append("profilePicture", profilePicture);
-
-			const response = await axios.put(
-				API.UPDATE_PROFILE_PHOTO(userId),
-				formData,
+			updateProfilePhotoMutation.mutate(
+				{ userId, profilePicture },
 				{
-					headers: {
-						"Content-Type": "multipart/form-data",
-						Authorization: `Bearer ${localStorage.getItem(
-							"token"
-						)}`,
+					onSuccess: () => {
+						toast.success("Profile Photo Updated Succesfully!");
+						navigate("/");
 					},
 				}
 			);
-			if (response) {
-				toast.success(response.data.message);
-				dispatch(setProfilePic(response.data.data.profilePicture));
-				navigate("/");
-			}
 		} catch (error) {
 			console.log("Change Profile Picture Error: ", error);
 		}
