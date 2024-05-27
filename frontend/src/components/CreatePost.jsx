@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { validatePost } from "../helpers/formValidation";
-import { API } from "../constants/endpoints";
 
-import axios from "axios";
 import toast from "react-hot-toast";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createPost } from "../api/post";
 
 const CreatePost = () => {
 	const [postContent, setPostContent] = useState("");
@@ -13,11 +13,22 @@ const CreatePost = () => {
 	const [postContentError, setPostContentError] = useState("");
 	const [postPictureError, setPostPictureError] = useState("");
 
-	const theme = useSelector((state) => state.themeReducer.theme)
+	const theme = useSelector((state) => state.themeReducer.theme);
 
+	const queryClient = useQueryClient()
+
+	const addMutation = useMutation({
+		mutationFn: ({ postContent, postPicture }) =>
+			createPost(postContent, postPicture),
+		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["posts"] }),
+	});
+	
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-
+	
+		const postContent = e.target.postContent.value;
+		const postPicture = e.target.postPicture.files[0];
+	
 		if (
 			!validatePost(
 				postContent,
@@ -25,43 +36,41 @@ const CreatePost = () => {
 				postPicture,
 				setPostPictureError
 			)
-		)
-			return;
-
+		) return;
+	
 		try {
-			const formData = new FormData();
-			formData.append("postContent", postContent);
-			formData.append("postPicture", postPicture);
-
-			const response = await axios.post(
-				API.CREATE_POST,
-				formData,
+			addMutation.mutate(
+				{ postContent, postPicture },
 				{
-					headers: {
-						"Content-Type": "multipart/form-data",
-						Authorization: `Bearer ${localStorage.getItem(
-							"token"
-						)}`,
+					onSuccess: () => {
+						setPostContent("");
+						document.getElementById("postPicture").value = null;
+						document.getElementById("my_modal_3").close();
+					},
+					onError: (error) => {
+						toast.error(error.response?.data?.message || "An error occurred");
+						console.log("Create Post Error: ", error);
 					},
 				}
 			);
-			if (response) {
-				setPostContent("");
-				document.getElementById("postPicture").value = null;
-				document.getElementById("my_modal_3").close();
-			}
 		} catch (error) {
-			toast.error(error.response.data.message);
+			toast.error("An unexpected error occurred");
 			console.log("Create Post Error: ", error);
 		}
 	};
-
+	
 	return (
 		<dialog id="my_modal_3" className="modal ">
-			<div className={`modal-box ${theme === "dark" ? "bg-customGray text-customWhite" : "bg-customWhite text-customBlack"}`}>
+			<div
+				className={`modal-box ${
+					theme === "dark"
+						? "bg-customGray text-customWhite"
+						: "bg-customWhite text-customBlack"
+				}`}
+			>
 				<form method="dialog">
 					<button
-					 	type="button"
+						type="button"
 						onClick={() => {
 							document.getElementById("my_modal_3").close();
 							setPostContentError("");
@@ -74,7 +83,7 @@ const CreatePost = () => {
 				</form>
 				<h3 className="font-bold text-xl text-center">Create Post</h3>
 				<form
-					onSubmit={handleSubmit}
+					onSubmit={(e) => handleSubmit(e, postContent, postPicture)}
 					className="flex flex-col gap-5 mt-1"
 					encType="multipart/form-data"
 				>
@@ -116,7 +125,7 @@ const CreatePost = () => {
 					)}
 					<div className="flex items-center justify-center gap-5">
 						<button
-						 	type="button"
+							type="button"
 							onClick={() => {
 								document.getElementById("my_modal_3").close();
 								setPostContentError("");
