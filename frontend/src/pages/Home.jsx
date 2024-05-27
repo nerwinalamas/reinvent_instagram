@@ -16,11 +16,14 @@ import PostModal from "../components/PostModal";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { getPosts } from "../api/post";
+import { useLikePostMutation, useUnLikePostMutation } from "../mutation/post";
 
 const Home = () => {
 	const user = useSelector((state) => state.userReducer.user);
 	const clickedPost = useSelector((state) => state.postReducer.clickedPost);
 	const theme = useSelector((state) => state.themeReducer.theme);
+	const likePostMutation = useLikePostMutation();
+	const unlikePostMutation = useUnLikePostMutation();
 
 	const { data, isLoading, isError, error } = useQuery({
 		queryKey: ["posts"],
@@ -58,49 +61,15 @@ const Home = () => {
 		document.getElementById("post_modal").showModal();
 	};
 
-	const handleLike = async (id, isLiked) => {
+	const handleLike = async (postId, isLiked) => {
 		try {
 			if (isLiked) {
-				const response = await axios.post(
-					API.UNLIKE_POST(id),
-					{},
-					{
-						headers: {
-							Authorization: `Bearer ${localStorage.getItem(
-								"token"
-							)}`,
-						},
-					}
-				);
-				dispatch(unlikePost(id, user._id));
-				const updatedLikes = clickedPost.likes.filter(
-					(likeId) => likeId !== user._id
-				);
-				dispatch(
-					setClickedPost({ ...clickedPost, likes: updatedLikes })
-				);
+				unlikePostMutation.mutate(postId)
 			} else {
-				const response = await axios.post(
-					API.LIKE_POST(id),
-					{},
-					{
-						headers: {
-							Authorization: `Bearer ${localStorage.getItem(
-								"token"
-							)}`,
-						},
-					}
-				);
-				dispatch(likePost(id, user._id));
-				dispatch(
-					setClickedPost({
-						...clickedPost,
-						likes: [...clickedPost.likes, user._id],
-					})
-				);
+				likePostMutation.mutate(postId)
 			}
 		} catch (error) {
-			console.log("Like Posts Error: ", error);
+			console.log("Like/Unlike Post Error: ", error);
 		}
 	};
 
