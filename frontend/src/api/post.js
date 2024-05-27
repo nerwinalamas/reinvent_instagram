@@ -173,3 +173,23 @@ export const unsavePost = async (postId) => {
         console.log("Unsaved Post Error: ", error);
     }
 };
+
+export const createComment = async (postId, comment) => {
+    try {
+        const response = await axios.post(
+            API.CREATE_COMMENT(postId),
+            { comment },
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem(
+                        "token"
+                    )}`,
+                },
+            }
+        );
+
+        return response.data.data
+    } catch (error) {
+        console.log("Comment Post Error: ", error);
+    }
+};
