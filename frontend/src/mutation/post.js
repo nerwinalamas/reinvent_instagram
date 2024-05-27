@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createComment, createPost, deletePost, likePost, savePost, unlikePost, unsavePost, updatePost } from "../api/post";
+import { createComment, createPost, deleteComment, deletePost, likePost, savePost, unlikePost, unsavePost, updatePost } from "../api/post";
 
 export const useCreatePostMutation = () => {
 	const queryClient = useQueryClient();
@@ -69,6 +69,15 @@ export const useCommentPostMutation = () => {
 
 	return useMutation({
         mutationFn: ({ postId, comment }) => createComment(postId, comment),
+		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["posts"] }),
+	});
+};
+
+export const useDeleteCommentPostMutation = () => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+        mutationFn: ({ postId, commentId }) => deleteComment(postId, commentId),
 		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["posts"] }),
 	});
 };
