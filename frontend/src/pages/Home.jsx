@@ -5,7 +5,6 @@ import { savedPosts, setUser, unsavedPosts } from "../_actions/userAction";
 import {
 	likePost,
 	setClickedPost,
-	setPosts,
 	unlikePost,
 } from "../_actions/postsAction";
 import { API } from "../constants/endpoints";
@@ -14,13 +13,19 @@ import PostUserInfo from "../components/PostUserInfo";
 import PostReaction from "../components/PostReaction";
 import PostModal from "../components/PostModal";
 
-import axios from "axios"; 
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import { getPosts } from "../api/post";
 
 const Home = () => {
-	const posts = useSelector((state) => state.postReducer.posts);
 	const user = useSelector((state) => state.userReducer.user);
 	const clickedPost = useSelector((state) => state.postReducer.clickedPost);
-	const theme = useSelector((state) => state.themeReducer.theme)
+	const theme = useSelector((state) => state.themeReducer.theme);
+
+	const { data, isLoading, isError, error } = useQuery({
+		queryKey: ["posts"],
+		queryFn: getPosts,
+	});
 
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
@@ -47,23 +52,6 @@ const Home = () => {
 	useEffect(() => {
 		fetchUser();
 	}, [dispatch]);
-
-	const getPosts = async () => {
-		try {
-			const response = await axios.get(API.GET_POSTS, {
-				headers: {
-					Authorization: `Bearer ${localStorage.getItem("token")}`,
-				},
-			});
-			dispatch(setPosts(response.data.data));
-		} catch (error) {
-			console.log("Get Posts Error: ", error);
-		}
-	};
-
-	useEffect(() => {
-		getPosts();
-	}, [posts, user]);
 
 	const handleClick = (post) => {
 		dispatch(setClickedPost(post));
@@ -119,16 +107,13 @@ const Home = () => {
 	const handleSavePost = async (postId, isSaved) => {
 		try {
 			if (isSaved) {
-				const response = await axios.delete(
-					API.UNSAVE_POST(postId),
-					{
-						headers: {
-							Authorization: `Bearer ${localStorage.getItem(
-								"token"
-							)}`,
-						},
-					}
-				);
+				const response = await axios.delete(API.UNSAVE_POST(postId), {
+					headers: {
+						Authorization: `Bearer ${localStorage.getItem(
+							"token"
+						)}`,
+					},
+				});
 				dispatch(unsavedPosts(postId));
 				const updatedSavedPosts = clickedPost.savedPosts.filter(
 					(savedPostId) => savedPostId !== postId
@@ -167,11 +152,17 @@ const Home = () => {
 	return (
 		<div className="w-screen px-5 flex flex-col items-center gap-5 pb-10 md:px-10 md:py-7 xl:flex xl:justify-between xl:gap-5 xl:py-0 xl:w-[99%] xl:mx-auto">
 			{/* POST CARD */}
-			{posts.length > 0 ? (
-				posts.map((post) => (
+			{isLoading ? (
+				<p>Loading...</p>
+			) : isError ? (
+				<p>Error: {error}</p>
+			) : data.length > 0 ? (
+				data.map((post) => (
 					<div
 						key={post._id}
-						className={`w-80 p-3  rounded-md flex flex-col gap-2 md:w-96 md:gap-5 lg:p-5 xl:w-[600px] xl:gap-1 ${theme === "dark" ? "bg-customGray" : "bg-slate-100" }`}
+						className={`w-80 p-3  rounded-md flex flex-col gap-2 md:w-96 md:gap-5 lg:p-5 xl:w-[600px] xl:gap-1 ${
+							theme === "dark" ? "bg-customGray" : "bg-slate-100"
+						}`}
 					>
 						{/* USER INFO */}
 						<PostUserInfo post={post} user={user} />
@@ -179,7 +170,11 @@ const Home = () => {
 						<img
 							src={API.GET_PHOTO_URL(post.postPicture)}
 							alt="post photo"
-							className={`xl:max-h-[500px] object-contain rounded-md ${theme === "dark" ? "bg-customBlack" : "bg-slate-200" }`}
+							className={`xl:max-h-[500px] object-contain rounded-md ${
+								theme === "dark"
+									? "bg-customBlack"
+									: "bg-slate-200"
+							}`}
 						/>
 						{/* REACTION SECTION */}
 						<PostReaction
@@ -212,7 +207,7 @@ const Home = () => {
 					</div>
 				))
 			) : (
-				<p>No Posts</p>
+				<p>No posts</p>
 			)}
 		</div>
 	);
