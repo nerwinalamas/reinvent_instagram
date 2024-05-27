@@ -1,28 +1,26 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { deletePost } from "../_actions/postsAction";
+import { useSelector } from "react-redux";
 import { API } from "../constants/endpoints";
-
-import axios from "axios";
 import moment from "moment";
 import { Ellipsis } from "lucide-react";
+import { useDeletePostMutation } from "../mutation/post";
+import toast from "react-hot-toast";
 
 const PostUserInfo = ({ post, user }) => {
 	const theme = useSelector((state) => state.themeReducer.theme);
 	const currentUser = useSelector((state) => state.userReducer.user);
-	const dispatch = useDispatch();
+	const deletePostMutation = useDeletePostMutation()
 
-	const handleDelete = async (id) => {
+	const handleDelete = async (postId) => {
 		try {
-			const response = await axios.delete(API.DELETE_POST(id), {
-				headers: {
-					Authorization: `Bearer ${localStorage.getItem("token")}`,
-				},
-			});
-			dispatch(deletePost(response.data.data));
+			deletePostMutation.mutate(postId, {
+				onSuccess: () => {
+					toast.success("Deleting Post Successfully!")
+				}
+			})
 		} catch (error) {
-			console.log("Get Posts Error: ", error);
+			console.log("Deleting Post Error: ", error);
 		}
 	};
 
