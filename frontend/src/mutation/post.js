@@ -81,3 +81,58 @@ export const useDeleteCommentPostMutation = () => {
 		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["posts"] }),
 	});
 };
+
+// FOR PROFILE PAGE
+export const useLikePostProfileMutation = () => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: likePost,
+		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["userPosts"] }),
+	});
+};
+
+export const useUnLikePostProfileMutation = () => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+        mutationFn: unlikePost,
+		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["userPosts"] }),
+	});
+};
+
+export const useSavePostProfileMutation = () => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+        mutationFn: savePost,
+		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["userPosts"] }),
+	});
+};
+
+export const useUnsavePostProfileMutation = () => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+        mutationFn: unsavePost,
+		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["userPosts"] }),
+	});
+};
+
+export const useCommentPostProfileMutation = () => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+        mutationFn: ({ postId, comment }) => createComment(postId, comment),
+		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["userPosts"] }),
+	});
+};
+
+export const useDeleteCommentPostProfileMutation = () => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+        mutationFn: ({ postId, commentId }) => deleteComment(postId, commentId),
+		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["userPosts"] }),
+	});
+};
