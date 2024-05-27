@@ -8,6 +8,7 @@ export const getPosts = async () => {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
         });
+
         return response.data.data
     } catch (error) {
         console.log("Get Posts Error: ", error);
@@ -32,9 +33,35 @@ export const createPost = async (postContent, postPicture) => {
                 },
             }
         );
+
         return response.data.data
     } catch (error) {
         console.log("Creating Post Error: ", error);
+    }
+};
+
+export const updatePost = async (postId, postContent, postPicture) => {
+    try {
+        const formData = new FormData();
+        formData.append("postContent", postContent);
+        formData.append("postPicture", postPicture);
+
+        const response = await axios.put(
+            API.UPDATE_POST(postId),
+            formData,
+            {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                    Authorization: `Bearer ${localStorage.getItem(
+                        "token"
+                    )}`,
+                },
+            }
+        );
+
+        return response.data.data
+    } catch (error) {
+        console.error("Updating Post Error:", error);
     }
 };
 
@@ -50,9 +77,10 @@ export const getUserPosts = async (userId) => {
                 },
             }
         );
+
         return response.data.data
     } catch (error) {
-        console.log("Get Posts Error: ", error);
+        console.log("Get User Posts Error: ", error);
     }
 };
 
@@ -69,6 +97,7 @@ export const likePost = async (postId) => {
                 },
             }
         );
+
         return response.data.data
     } catch (error) {
         console.log("Like Post Error: ", error);
@@ -88,6 +117,7 @@ export const unlikePost = async (postId) => {
                 },
             }
         );
+
         return response.data.data
     } catch (error) {
         console.log("Unlike Post Error: ", error);
@@ -107,6 +137,7 @@ export const savePost = async (postId) => {
                 },
             }
         );
+
         return response.data.data
     } catch (error) {
         console.log("Saved Post Error: ", error);
@@ -122,6 +153,7 @@ export const unsavePost = async (postId) => {
                 )}`,
             },
         });
+
         return response.data.data
     } catch (error) {
         console.log("Unsaved Post Error: ", error);
