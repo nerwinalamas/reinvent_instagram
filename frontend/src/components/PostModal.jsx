@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteComment } from "../_actions/postsAction";
 import { API } from "../constants/endpoints";
-
-import axios from "axios";
 import moment from "moment";
 import { Bookmark, MessageCircle, Redo2, ThumbsUp } from "lucide-react";
-import { useCommentPostMutation } from "../mutation/post";
+import {
+	useCommentPostMutation,
+	useDeleteCommentPostMutation,
+} from "../mutation/post";
+import toast from "react-hot-toast";
 
 const PostModal = ({
 	user,
@@ -19,6 +20,7 @@ const PostModal = ({
 	const [newComment, setNewComment] = useState("");
 	const theme = useSelector((state) => state.themeReducer.theme);
 	const createCommentMutation = useCommentPostMutation();
+	const deleteCommentMutation = useDeleteCommentPostMutation();
 
 	const dispatch = useDispatch();
 
@@ -42,25 +44,17 @@ const PostModal = ({
 
 	const handleDeleteComment = async (postId, commentId) => {
 		try {
-			const response = await axios.delete(
-				API.DELETE_COMMENT(postId, commentId),
+			deleteCommentMutation.mutate(
+				{ postId, commentId },
 				{
-					headers: {
-						Authorization: `Bearer ${localStorage.getItem(
-							"token"
-						)}`,
+					onSuccess: () => {
+						toast.success("Deleting Comment Successfully!");
+						document.getElementById("post_modal").close(); // BAD FOR UX
 					},
 				}
 			);
-			dispatch(deleteComment(postId, commentId));
-			const updatedComments = clickedPost.comments.filter(
-				(comment) => comment._id !== commentId
-			);
-			dispatch(
-				setClickedPost({ ...clickedPost, comments: updatedComments })
-			);
 		} catch (error) {
-			console.log("Comment in a Deleting Post Error: ", error);
+			console.log("Deleting Comment Error: ", error);
 		}
 	};
 
