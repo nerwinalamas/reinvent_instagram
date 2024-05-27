@@ -1,21 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { updatePost } from "../_actions/postsAction";
 import { validatePost } from "../helpers/formValidation";
 import { API } from "../constants/endpoints";
 
 import axios from "axios";
 import toast from "react-hot-toast";
+import { useUpdatePostMutation } from "../mutation/post";
 
 const UpdatePost = () => {
 	const { id } = useParams();
 	const [data, setData] = useState({ postContent: "", postPicture: null });
+	const updatePostMutation = useUpdatePostMutation();
 
 	const [postContentError, setPostContentError] = useState("");
 	const [postPictureError, setPostPictureError] = useState("");
 
-	const dispatch = useDispatch();
 	const navigate = useNavigate();
 
 	const getPost = async () => {
@@ -43,6 +42,9 @@ const UpdatePost = () => {
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 
+		const postContent = e.target.postContent.value;
+		const postPicture = e.target.postPicture.files[0];
+
 		if (
 			!validatePost(
 				data.postContent,
@@ -54,28 +56,19 @@ const UpdatePost = () => {
 			return;
 
 		try {
-			const formData = new FormData();
-			formData.append("postContent", data.postContent);
-			formData.append("postPicture", data.postPicture);
-
-			const response = await axios.put(
-				API.UPDATE_POST(id),
-				formData,
+			updatePostMutation.mutate(
+				{ postId: id, postContent, postPicture },
 				{
-					headers: {
-						"Content-Type": "multipart/form-data",
-						Authorization: `Bearer ${localStorage.getItem(
-							"token"
-						)}`,
+					onSuccess: () => {
+						toast.success("Post Updated Successfully");
+						navigate("/");
+					},
+					onError: (error) => {
+						toast.error("An error occurred");
+						console.log("Update Post Error: ", error);
 					},
 				}
 			);
-			dispatch(updatePost(response.data.data._id, response.data.data));
-
-			if (response) {
-				toast.success("Post Updated Successfully");
-				navigate("/");
-			}
 		} catch (error) {
 			console.error("Update Post Error:", error);
 		}
