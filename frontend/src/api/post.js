@@ -93,3 +93,37 @@ export const unlikePost = async (postId) => {
         console.log("Unlike Post Error: ", error);
     }
 };
+
+export const savePost = async (postId) => {
+    try {
+        const response = await axios.post(
+            API.SAVE_POST(postId),
+            {},
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem(
+                        "token"
+                    )}`,
+                },
+            }
+        );
+        return response.data.data
+    } catch (error) {
+        console.log("Saved Post Error: ", error);
+    }
+};
+
+export const unsavePost = async (postId) => {
+    try {
+        const response = await axios.delete(API.UNSAVE_POST(postId), {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem(
+                    "token"
+                )}`,
+            },
+        });
+        return response.data.data
+    } catch (error) {
+        console.log("Unsaved Post Error: ", error);
+    }
+};
