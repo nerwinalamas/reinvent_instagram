@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { validatePost } from "../helpers/formValidation";
-
+import { useCreatePostMutation } from "../mutation/post";
 import toast from "react-hot-toast";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createPost } from "../api/post";
 
 const CreatePost = () => {
 	const [postContent, setPostContent] = useState("");
@@ -14,14 +12,7 @@ const CreatePost = () => {
 	const [postPictureError, setPostPictureError] = useState("");
 
 	const theme = useSelector((state) => state.themeReducer.theme);
-
-	const queryClient = useQueryClient()
-
-	const addMutation = useMutation({
-		mutationFn: ({ postContent, postPicture }) =>
-			createPost(postContent, postPicture),
-		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["posts"] }),
-	});
+	const createPostMutation = useCreatePostMutation();
 	
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -39,7 +30,7 @@ const CreatePost = () => {
 		) return;
 	
 		try {
-			addMutation.mutate(
+			createPostMutation.mutate(
 				{ postContent, postPicture },
 				{
 					onSuccess: () => {
