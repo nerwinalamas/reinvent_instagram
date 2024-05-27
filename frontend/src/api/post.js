@@ -55,3 +55,41 @@ export const getUserPosts = async (userId) => {
         console.log("Get Posts Error: ", error);
     }
 };
+
+export const likePost = async (postId) => {
+    try {
+        const response = await axios.post(
+            API.LIKE_POST(postId),
+            {},
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem(
+                        "token"
+                    )}`,
+                },
+            }
+        );
+        return response.data.data
+    } catch (error) {
+        console.log("Like Post Error: ", error);
+    }
+};
+
+export const unlikePost = async (postId) => {
+    try {
+        const response = await axios.post(
+            API.UNLIKE_POST(postId),
+            {},
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem(
+                        "token"
+                    )}`,
+                },
+            }
+        );
+        return response.data.data
+    } catch (error) {
+        console.log("Unlike Post Error: ", error);
+    }
+};
