@@ -1,24 +1,37 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { API } from "../constants/endpoints";
 import moment from "moment";
 import { Ellipsis } from "lucide-react";
-import { useDeletePostMutation } from "../mutation/post";
+import {
+	useDeletePostMutation,
+	useDeletePostProfileMutation,
+} from "../mutation/post";
 import toast from "react-hot-toast";
 
 const PostUserInfo = ({ post, user }) => {
+	const location = useLocation();
 	const theme = useSelector((state) => state.themeReducer.theme);
 	const currentUser = useSelector((state) => state.userReducer.user);
-	const deletePostMutation = useDeletePostMutation()
+	const deletePostMutation = useDeletePostMutation();
+	const deletePostProfileMutation = useDeletePostProfileMutation();
 
 	const handleDelete = async (postId) => {
 		try {
-			deletePostMutation.mutate(postId, {
-				onSuccess: () => {
-					toast.success("Deleting Post Successfully!")
-				}
-			})
+			if (location.pathname === "/") {
+				deletePostMutation.mutate(postId, {
+					onSuccess: () => {
+						toast.success("Deleting Post Successfully!");
+					},
+				});
+			} else {
+				deletePostProfileMutation.mutate(postId, {
+					onSuccess: () => {
+						toast.success("Deleting Post Successfully!");
+					},
+				});
+			}
 		} catch (error) {
 			console.log("Deleting Post Error: ", error);
 		}
