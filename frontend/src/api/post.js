@@ -183,3 +183,17 @@ export const deleteComment = async (postId, commentId) => {
 		console.log("Deleting Comment Error: ", error);
 	}
 };
+
+export const getExplorePosts = async () => {
+	try {
+		const response = await axios.get(API.GET_EXPLORE_POSTS, {
+			headers: {
+				Authorization: `Bearer ${localStorage.getItem("token")}`,
+			},
+		});
+
+		return response.data.data;
+	} catch (error) {
+		console.log("Get Explore Posts Error: ", error);
+	}
+};
