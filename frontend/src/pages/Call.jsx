@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useSocket } from "../context/SocketContext";
-import { API } from "../constants/endpoints";
 import CallControls from "../components/CallControls";
 import CallUser from "../components/CallUser";
-import axios from "axios";
 import * as process from "process";
+import { useQuery } from "@tanstack/react-query";
+import { getUser } from "../api/user";
 
 window.global = window;
 window.process = process;
@@ -13,10 +13,14 @@ window.Buffer = [];
 
 const Call = () => {
 	const { id } = useParams();
-	const [user, setUser] = useState({});
 
 	const [toggleVideo, setToggleVideo] = useState(false);
 	const [toggleAudio, setToggleAudio] = useState(true);
+
+	const { data } = useQuery({
+		queryKey: ["user", id],
+		queryFn: () => getUser(id),
+	}); 
 
 	const {
 		socket,
@@ -32,28 +36,6 @@ const Call = () => {
 		stream,
 		callEnded,
 	} = useSocket();
-
-	const getUser = async (id) => {
-		try {
-			const response = await axios.get(
-				API.GET_USER(id),
-				{
-					headers: {
-						Authorization: `Bearer ${localStorage.getItem(
-							"token"
-						)}`,
-					},
-				}
-			);
-			setUser(response.data.data);
-		} catch (error) {
-			console.log("Call page get user error: ", error);
-		}
-	};
-
-	useEffect(() => {
-		getUser(id);
-	}, []);
 
 	useEffect(() => {
 		socket.on("camera_state_change", (data) => {
@@ -140,9 +122,9 @@ const Call = () => {
 			)}
 
 			{/*INCOMMING CALL NOT ACCEPTED YET */}
-			{receivingCall && !callAccepted && <CallUser user={user} action="Calling..." />}
+			{receivingCall && !callAccepted && <CallUser user={data} action="Calling..." />}
 
-			{callEnded && callAccepted && <CallUser user={user} action="Call Ended" />}
+			{callEnded && callAccepted && <CallUser user={data} action="Call Ended" />}
 
 			{receivingCall && !callEnded && <CallControls
 				toggleAudio={toggleAudio}
