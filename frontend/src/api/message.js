@@ -28,3 +28,21 @@ export const getChatmates = async () => {
 		console.log("Get Chatmates Error: ", error);
 	}
 };
+
+export const sendMessage = async ({userId, message}) => {
+	try {
+		const response = await axios.post(
+			API.SEND_MESSAGE(userId),
+			{ message },
+			{
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem("token")}`,
+				},
+			}
+		);
+
+		return response.data.data;
+	} catch (error) {
+		console.log("Sending Message Error: ", error);
+	}
+};
