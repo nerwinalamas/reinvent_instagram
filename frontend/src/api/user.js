@@ -24,3 +24,17 @@ export const updateProfilePhoto = async (userId, profilePicture) => {
         console.log("Changing Profile Photo Error: ", error);
     }
 };
+
+export const searchUser = async (isSearching) => {
+    try {
+        const response = await axios.get(API.SEARCH_USER(isSearching), {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+        });
+
+        return response.data.data
+    } catch (error) {
+        console.log("Search User Error: ", error);
+    }
+};
