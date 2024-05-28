@@ -1,45 +1,27 @@
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { setConversation } from "../_actions/convoAction";
+import { useSelector } from "react-redux";
 import { useSocket } from "../context/SocketContext";
-import { API } from "../constants/endpoints";
-
-import axios from "axios";
+import { useSendMessageMutation } from "../mutation/message";
 import { Send } from "lucide-react";
 
-const MessageForm = ({ getConversation }) => {
+const MessageForm = () => {
 	const [message, setMessage] = useState("");
 	const theme = useSelector((state) => state.themeReducer.theme);
-	const convo = useSelector((state) => state.convoReducer.convo);
     const selectedChat = useSelector((state) => state.convoReducer.selectedChat);
     const user = useSelector((state) => state.userReducer.user);
+	const sendMessageMutation = useSendMessageMutation();
 	const { socket } = useSocket();
-
-	const dispatch = useDispatch();
 
 	const handleSendMessage = async (e, id) => {
 		e.preventDefault();
 
 		try {
-			const response = await axios.post(
-				API.SEND_MESSAGE(id),
-				{ message },
-				{
-					headers: {
-						Authorization: `Bearer ${localStorage.getItem(
-							"token"
-						)}`,
-					},
+			sendMessageMutation.mutate({ userId: id, message }, {
+				onSuccess: () => {
+					socket.emit("message", { message, userId: user._id });
+					setMessage("");
 				}
-			);
-			if (response) {
-				socket.emit("message", { message, userId: user._id });
-				setMessage("");
-				dispatch(setConversation([...convo, response.data.data]));
-				if (selectedChat && selectedChat._id) {
-					getConversation(selectedChat._id);
-				}
-			}
+			})
 		} catch (error) {
 			console.log("Get Conversation Error: ", error);
 		}

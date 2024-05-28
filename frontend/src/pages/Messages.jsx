@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setConversation, setSelectedChat } from "../_actions/convoAction";
+import { setSelectedChat } from "../_actions/convoAction";
 import { useSocket } from "../context/SocketContext";
 
 import MessageForm from "../components/MessageForm";
@@ -22,10 +22,6 @@ const Messages = () => {
 		if (socket) {
 			socket.emit("userConnected", user._id);
 
-			socket.on("mensahe", (data) => {
-				dispatch(setConversation([...convo, data]));
-			});
-
 			socket.on("callUser", (data) => {
 				setReceivingCall(true);
 				setCaller(data.from);
@@ -34,7 +30,6 @@ const Messages = () => {
 			});
 
 			return () => {
-				socket.off("mensahe");
 				socket.off("callUser");
 			};
 		}

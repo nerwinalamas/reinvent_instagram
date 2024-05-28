@@ -15,7 +15,7 @@ const MessageSection = () => {
 	);
 
 	const userId = selectedChat?._id;
-	const { data, isLoading, isError, error } = useQuery({
+	const { data, isLoading, isError, error, refetch } = useQuery({
 		queryKey: ["conversation", userId],
 		queryFn: () => getConversation(userId),
 		enabled: !!userId,
@@ -43,6 +43,24 @@ const MessageSection = () => {
 			containerRef.current.scrollTop = containerRef.current.scrollHeight;
 		}
 	};
+
+	useEffect(() => {
+        if (socket) {
+            socket.on("mensahe", async (data) => {
+                try {
+                    await refetch();
+                } catch (error) {
+                    console.log("Error Refetching Conversation: ", error);
+                }
+            });
+        }
+
+        return () => {
+            if (socket) {
+                socket.off("mensahe");
+            }
+        };
+    }, [refetch, user._id, socket]); 
 
 	useEffect(() => {
 		scrollToBottom();
