@@ -2,13 +2,10 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setSearchResults } from "../_actions/searchAction";
-import { API } from "../constants/endpoints";
-
+import { useSearchUserMutation } from "../mutation/user";
+import { Bell, Menu, MessageCircleMore, Plus, Search } from "lucide-react";
 import CreatePost from "./CreatePost";
 import More from "./More";
-
-import { Bell, Menu, MessageCircleMore, Plus, Search } from "lucide-react";
-import axios from "axios";
 
 const Navbar = () => {
 	const [isOpen, setIsOpen] = useState(false);
@@ -16,7 +13,8 @@ const Navbar = () => {
 
 	const user = useSelector((state) => state.userReducer.user);
 	const theme = useSelector((state) => state.themeReducer.theme);
-
+	
+	const searchUserMutation = useSearchUserMutation();
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
@@ -35,16 +33,13 @@ const Navbar = () => {
 		if (!isSearching) return;
 
 		try {
-			const response = await axios.get(API.SEARCH_USER(isSearching), {
-				headers: {
-					Authorization: `Bearer ${localStorage.getItem("token")}`,
+			searchUserMutation.mutate(isSearching, {
+				onSuccess: (data) => {
+					dispatch(setSearchResults(data));
+					navigate(`/search/${isSearching}`);
+					setIsSearching("");
 				},
 			});
-			if (response) {
-				dispatch(setSearchResults(response.data.data));
-				navigate(`/search/${isSearching}`);
-				setIsSearching("");
-			}
 		} catch (error) {
 			console.log("Search Error: ", error);
 		}
