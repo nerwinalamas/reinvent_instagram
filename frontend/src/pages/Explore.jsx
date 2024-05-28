@@ -3,13 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { API } from "../constants/endpoints";
-
-import axios from "axios";
+import { getExplorePosts } from "../api/post";
+import { useQuery } from "@tanstack/react-query";
 import moment from "moment";
 
 const Explore = () => {
 	const navigate = useNavigate();
-	const [exploreData, setExploreData] = useState([]);
 	const [postData, setPostData] = useState({});
 	const theme = useSelector((state) => state.themeReducer.theme)
 
@@ -19,27 +18,10 @@ const Explore = () => {
 		}
 	}, []);
 
-	const getPosts = async () => {
-		try {
-			const response = await axios.get(
-				API.GET_EXPLORE_POSTS,
-				{
-					headers: {
-						Authorization: `Bearer ${localStorage.getItem(
-							"token"
-						)}`,
-					},
-				}
-			);
-			setExploreData(response.data.data);
-		} catch (error) {
-			console.log("Explore Page Error: ", error);
-		}
-	};
-
-	useEffect(() => {
-		getPosts();
-	}, []);
+	const { data, isLoading, isError, error } = useQuery({
+		queryKey: ["explorePosts"],
+		queryFn: getExplorePosts,
+	});
 
 	return (
 		<ResponsiveMasonry
@@ -47,8 +29,12 @@ const Explore = () => {
 			className="h-auto overflow-y-auto p-5 xl:px-40 xl:max-w-screen-2xl xl:mx-auto"
 		>
 			<Masonry columnsCount={3} gutter="10px">
-				{exploreData.length > 0 ? (
-					exploreData.map((image, i) => (
+				{isLoading ? (
+					<p>Loading...</p>
+				) : isError ? (
+					<p>Error: {error}</p>
+				) : data.length > 0 ? (
+					data.map((image, i) => (
 						<img
 							key={i}
 							src={API.GET_PHOTO_URL(image.postPicture)}
@@ -62,7 +48,7 @@ const Explore = () => {
 						/>
 					))
 				) : (
-					<p>No Post Data</p>
+					<p>No posts</p>
 				)}
 			</Masonry>
 
