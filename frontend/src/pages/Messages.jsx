@@ -12,7 +12,6 @@ import ChatHeads from "../components/ChatHeads";
 const Messages = () => {
 	const { socket, setReceivingCall, setCaller, setCallerSignal, setName } = useSocket();
 	const user = useSelector((state) => state.userReducer.user);
-	const convo = useSelector((state) => state.convoReducer.convo);
 	const selectedChat = useSelector((state) => state.convoReducer.selectedChat);
 	const theme = useSelector((state) => state.themeReducer.theme);
 
@@ -33,7 +32,7 @@ const Messages = () => {
 				socket.off("callUser");
 			};
 		}
-	}, [socket, dispatch, convo, user._id]);
+	}, [socket, user._id]);
 
 	useEffect(() => {
 		return () => {

@@ -29,7 +29,7 @@ export const getChatmates = async () => {
 	}
 };
 
-export const sendMessage = async ({userId, message}) => {
+export const sendMessage = async (userId, message) => {
 	try {
 		const response = await axios.post(
 			API.SEND_MESSAGE(userId),
