@@ -4,11 +4,22 @@ import { useSelector } from "react-redux";
 import { useSocket } from "../context/SocketContext";
 import Peer from "simple-peer";
 import moment from "moment";
+import { useQuery } from "@tanstack/react-query";
+import { getConversation } from "../api/message";
 
 const MessageSection = () => {
 	const convo = useSelector((state) => state.convoReducer.convo);
 	const user = useSelector((state) => state.userReducer.user);
-	const selectedChat = useSelector((state) => state.convoReducer.selectedChat);
+	const selectedChat = useSelector(
+		(state) => state.convoReducer.selectedChat
+	);
+
+	const userId = selectedChat?._id;
+	const { data, isLoading, isError, error } = useQuery({
+		queryKey: ["conversation", userId],
+		queryFn: () => getConversation(userId),
+		enabled: !!userId,
+	});
 
 	const navigate = useNavigate();
 
@@ -22,7 +33,7 @@ const MessageSection = () => {
 		callerSignal,
 		receivingCall,
 		callAccepted,
-		callEnded
+		callEnded,
 	} = useSocket();
 
 	const containerRef = useRef(null);
@@ -33,7 +44,7 @@ const MessageSection = () => {
 		}
 	};
 
-    useEffect(() => {
+	useEffect(() => {
 		scrollToBottom();
 	}, [convo, receivingCall]);
 
@@ -56,8 +67,12 @@ const MessageSection = () => {
 			ref={containerRef}
 			className="h-[53vh] md:h-[670px] xl:h-[85%] overflow-y-auto px-1 pt-2 mt-2 md:mt-3 flex flex-col gap-2"
 		>
-			{convo && convo.length > 0 ? (
-				convo.map((convo) => (
+			{isLoading ? (
+				<p>Loading...</p>
+			) : isError ? (
+				<p>Error: {error}</p>
+			) : data.messages.length > 0 ? (
+				data.messages.map((convo) => (
 					<div
 						key={convo._id}
 						className={`chat ${
@@ -87,8 +102,10 @@ const MessageSection = () => {
 				<div className="flex flex-col justify-center gap-2 mt-2">
 					<h1 className="text-sm lg:text-base">
 						{/* changes */}
-						<span className="capitalize">{selectedChat.firstName}</span> is
-						calling...
+						<span className="capitalize">
+							{selectedChat.firstName}
+						</span>{" "}
+						is calling...
 					</h1>
 					<button
 						onClick={() => answerCall(selectedChat._id)}
