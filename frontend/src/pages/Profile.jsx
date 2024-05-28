@@ -63,7 +63,7 @@ const Profile = () => {
 		document.getElementById("post_modal").showModal();
 	};
 
-	const handleLike = async (postId, isLiked) => {
+	const handleLike = (postId, isLiked) => {
 		try {
 			if (isLiked) {
 				unlikePostMutation.mutate(postId);
@@ -90,7 +90,7 @@ const Profile = () => {
 	return (
 		<div className="h-auto flex flex-col gap-5">
 			{/* USER PROFILE */}
-			<UserProfile />
+			<UserProfile userId={id} />
 			{/* USER POSTS */}
 			<div className="flex flex-col items-center gap-5 pb-10">
 				{isLoading ? (

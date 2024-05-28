@@ -1,19 +1,24 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { followUser, unfollowUser } from "../_actions/userAction";
 import { API } from "../constants/endpoints";
 
 import axios from "axios";
 import FollowersModal from "./FollowersModal";
 import FollowingModal from "./FollowingModal";
 import { followOtherUser, unfollowOtherUser } from "../_actions/otherUserAction";
+import { useQuery } from "@tanstack/react-query";
+import { getUserPosts } from "../api/post";
 
-const UserProfile = () => {
+const UserProfile = ({ userId }) => {
 	const currentUser = useSelector((state) => state.userReducer.user);
 	const otherUser = useSelector((state) => state.otherUserReducer.otherUser)
-	const otherUserPosts = useSelector((state) => state.otherUserReducer.otherUserPosts)
 	const theme = useSelector((state) => state.themeReducer.theme);
+
+	const { data } = useQuery({
+		queryKey: ["userPosts", userId],
+		queryFn: () => getUserPosts(userId),
+	});
 
 	const dispatch = useDispatch();
 
@@ -31,10 +36,8 @@ const UserProfile = () => {
 				}
 			);
 			if (response.data.message === "Followed user") {
-				// dispatch(followUser(id));
 				dispatch(followOtherUser(id));
 			} else if (response.data.message === "Unfollowed user") {
-				// dispatch(unfollowUser(id));
 				dispatch(unfollowOtherUser(id));
 			}
 		} catch (error) {
@@ -109,8 +112,8 @@ const UserProfile = () => {
 			</div>
 			<div className="flex gap-5 text-sm mt-5">
 				<p>
-					{otherUserPosts && otherUserPosts.length}{" "}
-					{otherUserPosts && otherUserPosts.length > 1 ? "posts" : "post"}
+					{data && data.length}{" "}
+					{data && data.length > 1 ? "posts" : "post"}
 				</p>
 				<p
 					className="cursor-pointer hover:underline"
