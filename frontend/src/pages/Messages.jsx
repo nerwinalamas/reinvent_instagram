@@ -2,8 +2,6 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setConversation, setSelectedChat } from "../_actions/convoAction";
 import { useSocket } from "../context/SocketContext";
-import { API } from "../constants/endpoints";
-import axios from "axios";
 
 import MessageForm from "../components/MessageForm";
 import MessageTitle from "../components/MessageTitle";
@@ -12,7 +10,7 @@ import ChatPlaceholder from "../components/ChatPlaceholder";
 import ChatHeads from "../components/ChatHeads";
 
 const Messages = () => {
-	const { socket, setReceivingCall, setCaller, setCallerSignal, setName, callEnded } = useSocket();
+	const { socket, setReceivingCall, setCaller, setCallerSignal, setName } = useSocket();
 	const user = useSelector((state) => state.userReducer.user);
 	const convo = useSelector((state) => state.convoReducer.convo);
 	const selectedChat = useSelector((state) => state.convoReducer.selectedChat);
@@ -42,34 +40,6 @@ const Messages = () => {
 		}
 	}, [socket, dispatch, convo, user._id]);
 
-	const getConversation = async (id) => {
-		try {
-			const response = await axios.get(
-				API.GET_CONVERSATION(id),
-				{
-					headers: {
-						Authorization: `Bearer ${localStorage.getItem(
-							"token"
-						)}`,
-					},
-				}
-			);
-			if (response.data.length === 0) {
-				dispatch(setConversation([]));
-			} else {
-				dispatch(setConversation(response.data.data.messages));
-			}
-		} catch (error) {
-			console.log("Get Conversation Error: ", error);
-		}
-	};
-
-	useEffect(() => {
-		if (selectedChat && selectedChat._id) {
-			getConversation(selectedChat._id);
-		}
-	}, [selectedChat, callEnded]);
-
 	useEffect(() => {
 		return () => {
 			dispatch(setSelectedChat(null));
@@ -96,7 +66,7 @@ const Messages = () => {
 						<MessageSection />
 					</div>
 					{/* INPUT MESSAGE HERE */}
-					<MessageForm getConversation={getConversation} />
+					<MessageForm />
 				</div>
 			) : (
 				<ChatPlaceholder />
