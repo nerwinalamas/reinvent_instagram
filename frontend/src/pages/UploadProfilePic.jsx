@@ -17,18 +17,19 @@ const UploadProfilePic = () => {
 		e.preventDefault();
 
 		const profilePicture = e.target.profilePicture.files[0];
-
+		const toastId = toast.loading("Uploading Profile Photo...");
 		try {
 			updateProfilePhotoMutation.mutate(
 				{ userId, profilePicture },
 				{
 					onSuccess: () => {
-						toast.success("Profile Photo Updated Succesfully!");
+						toast.success("Profile Photo Updated Succesfully!", { id: toastId });
 						navigate("/");
 					},
 				}
 			);
 		} catch (error) {
+			toast.error("An unexpected error occurred", { id: toastId });
 			console.log("Change Profile Picture Error: ", error);
 		}
 	};
