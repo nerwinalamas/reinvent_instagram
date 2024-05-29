@@ -1,7 +1,7 @@
 const Post = require("../models/post.model");
 const User = require("../models/user.model");
 const cloudinary = require("../utils/cloudinary");
-const fs = require('fs');
+const fs = require("fs");
 
 // CREATE POST
 const createPost = async (req, res) => {
@@ -102,7 +102,27 @@ const updatePost = async (req, res) => {
 const deletePost = async (req, res) => {
 	try {
 		const postId = req.params.id;
-		const deletedPost = await Post.findByIdAndDelete({ _id: postId });
+
+		const post = await Post.findById({ _id: postId });
+
+		if (!post) {
+			return res
+				.status(404)
+				.json({ success: false, message: "Post not found" });
+		}
+
+		if (post.postPicture) {
+			const publicId = post.postPicture.split("/").pop().split(".")[0];
+			await cloudinary.uploader.destroy(`posts/${publicId}`, function(error, result) {
+				if (error) {
+					console.log("Error: ", error)
+				} else {
+					console.log("Result: ", result)
+				}
+			});
+		}
+
+		const deletedPost = await Post.findByIdAndDelete({ _id: post._id });
 
 		if (!deletedPost) {
 			return res
