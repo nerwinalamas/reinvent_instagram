@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { validatePost } from "../helpers/formValidation";
-import { useCreatePostMutation } from "../mutation/post";
+import { useCreatePostMutation, useCreatePostProfileMutation } from "../mutation/post";
 import toast from "react-hot-toast";
+import { useLocation } from "react-router-dom";
 
 const CreatePost = () => {
+	const location = useLocation();
+
 	const [postContent, setPostContent] = useState("");
 	const [postPicture, setPostPicture] = useState(null);
 
@@ -13,13 +16,14 @@ const CreatePost = () => {
 
 	const theme = useSelector((state) => state.themeReducer.theme);
 	const createPostMutation = useCreatePostMutation();
-	
+	const createPostProfileMutation = useCreatePostProfileMutation();
+
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-	
+
 		const postContent = e.target.postContent.value;
 		const postPicture = e.target.postPicture.files[0];
-	
+
 		if (
 			!validatePost(
 				postContent,
@@ -27,29 +31,52 @@ const CreatePost = () => {
 				postPicture,
 				setPostPictureError
 			)
-		) return;
-	
+		)
+			return;
+
+		const toastId = toast.loading("Loading...");
+
 		try {
-			createPostMutation.mutate(
-				{ postContent, postPicture },
-				{
-					onSuccess: () => {
-						setPostContent("");
-						document.getElementById("postPicture").value = null;
-						document.getElementById("my_modal_3").close();
-					},
-					onError: (error) => {
-						toast.error(error.response?.data?.message || "An error occurred");
-						console.log("Create Post Error: ", error);
-					},
-				}
-			);
+			if (location.pathname === "/") {
+				createPostMutation.mutate(
+					{ postContent, postPicture },
+					{
+						onSuccess: () => {
+							setPostContent("");
+							toast.success("Create Post Successfully", { id: toastId });
+							document.getElementById("postPicture").value = null;
+							document.getElementById("my_modal_3").close();
+						},
+						onError: (error) => {
+							toast.error("An error occurred", { id: toastId });
+							console.log("Create Post Error: ", error);
+						},
+					}
+				);
+			} else {
+				createPostProfileMutation.mutate(
+					{ postContent, postPicture },
+					{
+						onSuccess: () => {
+							setPostContent("");
+							toast.success("Create Post Successfully", { id: toastId });
+							document.getElementById("postPicture").value = null;
+							document.getElementById("my_modal_3").close();
+						},
+						onError: (error) => {
+							toast.error("An error occurred", { id: toastId });
+							console.log("Create Post Error: ", error);
+						},
+					}
+				);
+			}
+			
 		} catch (error) {
-			toast.error("An unexpected error occurred");
+			toast.error("An unexpected error occurred", { id: toastId });
 			console.log("Create Post Error: ", error);
 		}
 	};
-	
+
 	return (
 		<dialog id="my_modal_3" className="modal ">
 			<div
