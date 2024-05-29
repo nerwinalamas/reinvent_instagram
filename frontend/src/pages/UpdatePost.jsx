@@ -55,21 +55,24 @@ const UpdatePost = () => {
 		)
 			return;
 
+		const toastId = toast.loading("Updating Post...");
+
 		try {
 			updatePostMutation.mutate(
 				{ postId: id, postContent, postPicture },
 				{
 					onSuccess: () => {
-						toast.success("Post Updated Successfully");
+						toast.success("Post Updated Successfully", { id: toastId });
 						navigate("/");
 					},
 					onError: (error) => {
-						toast.error("An error occurred");
+						toast.error("An error occurred", { id: toastId });
 						console.log("Update Post Error: ", error);
 					},
 				}
 			);
 		} catch (error) {
+			toast.error("An unexpected error occurred", { id: toastId });
 			console.error("Update Post Error:", error);
 		}
 	};
