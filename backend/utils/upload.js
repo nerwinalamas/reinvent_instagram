@@ -11,6 +11,21 @@ const storage = multer.diskStorage({
 	},
 });
 
-const upload = multer({ storage: storage });
+const fileFilter = (req, file, cb) => {
+	const filetypes = /jpeg|jpg|png|gif/;
+	const mimetype = filetypes.test(file.mimetype);
 
-module.exports = upload
+	if (mimetype) {
+		return cb(null, true);
+	} else {
+		cb(
+			new Error(
+				"Invalid file type. Only JPEG, PNG, and GIF files are allowed."
+			)
+		);
+	}
+};
+
+const upload = multer({ storage, fileFilter });
+
+module.exports = upload;
