@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { API } from "../constants/endpoints";
 import moment from "moment";
 import { Bookmark, MessageCircle, Redo2, ThumbsUp } from "lucide-react";
 import {
@@ -87,10 +86,7 @@ const PostModal = ({
 								{clickedPost.postedBy.profilePicture ? (
 									<div className="w-11 h-11 rounded-full flex flex-col bg-customBlack items-center justify-center">
 										<img
-											src={API.GET_PHOTO_URL(
-												clickedPost.postedBy
-													.profilePicture
-											)}
+											src={clickedPost.postedBy.profilePicture}
 											alt=""
 											className="w-full h-full rounded-full object-contain"
 										/>
@@ -121,7 +117,7 @@ const PostModal = ({
 						{/* CONTENT SECTION */}
 						<div className="h-[60vh] overflow-y-auto flex flex-col gap-5 lg:flex-row">
 							<img
-								src={API.GET_PHOTO_URL(clickedPost.postPicture)}
+								src={clickedPost.postPicture}
 								alt="Sample Image"
 								className={`h-80 xl:max-h-[500px] object-contain rounded-md lg:h-full lg:w-[50vw] xl:w-full ${
 									theme === "dark"

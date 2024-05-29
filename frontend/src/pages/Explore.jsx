@@ -37,7 +37,7 @@ const Explore = () => {
 					data.map((image, i) => (
 						<img
 							key={i}
-							src={API.GET_PHOTO_URL(image.postPicture)}
+							src={image.postPicture}
 							style={{ width: "100%", display: "block" }}
 							onClick={() => {
 								document
@@ -69,7 +69,7 @@ const Explore = () => {
 										{postData.postedBy.profilePicture ? (
 											<div className="w-11 h-11 rounded-full flex flex-col bg-customBlack items-center justify-center">
 												<img
-													src={API.GET_PHOTO_URL(postData.postedBy.profilePicture)}
+													src={postData.postedBy.profilePicture}
 													alt=""
 													className="w-full h-full rounded-full object-contain"
 												/>
@@ -101,7 +101,7 @@ const Explore = () => {
 									</div>
 								</div>
 								<img
-									src={API.GET_PHOTO_URL(postData.postPicture)}
+									src={postData.postPicture}
 									alt="Sample Image"
 									className={`md:max-h-[500px] object-contain rounded-md ${theme === "dark" ? "bg-black" : "bg-slate-200" }`}
 								/>

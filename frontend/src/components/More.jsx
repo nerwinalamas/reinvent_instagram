@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { API } from "../constants/endpoints";
-
 import { Bookmark, Compass, Home, LogOut, Moon, Sun } from "lucide-react";
 import { setTheme } from "../_actions/themeAction";
 
@@ -38,7 +36,7 @@ const More = () => {
 					className="w-11 h-11 rounded-full flex flex-col bg-customBlack items-center justify-center"
 				>
 					<img
-						src={API.GET_PHOTO_URL(user.profilePicture)}
+						src={user.profilePicture}
 						alt={user.firstName + " Photo"}
 						className="w-full h-full rounded-full object-contain"
 					/>
@@ -86,9 +84,7 @@ const More = () => {
 									className="w-11 h-11 rounded-full flex flex-col bg-customBlack items-center justify-center"
 								>
 									<img
-										src={API.GET_PHOTO_URL(
-											user.profilePicture
-										)}
+										src={user.profilePicture}
 										alt={user.firstName + " Photo"}
 										className="w-full h-full rounded-full object-contain"
 									/>

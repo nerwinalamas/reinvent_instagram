@@ -2,7 +2,6 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useSocket } from "../context/SocketContext";
-import { API } from "../constants/endpoints";
 import { Phone, Video } from "lucide-react";
 import Peer from "simple-peer";
 
@@ -56,7 +55,7 @@ const MessageTitle = () => {
 				{selectedChat.profilePicture ? (
 					<div className="w-11 h-11 rounded-full flex flex-col bg-customBlack items-center justify-center">
 						<img
-							src={API.GET_PHOTO_URL(selectedChat.profilePicture)}
+							src={selectedChat.profilePicture}
 							alt={selectedChat.firstName + " Photo"}
 							className="w-full h-full rounded-full object-contain"
 						/>

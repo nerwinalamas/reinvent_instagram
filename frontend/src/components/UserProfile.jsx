@@ -60,7 +60,7 @@ const UserProfile = ({ userId }) => {
 			>
 				{otherUser.profilePicture ? (
 					<img
-						src={API.GET_PHOTO_URL(otherUser.profilePicture)}
+						src={otherUser.profilePicture}
 						alt=""
 						className="w-full h-full rounded-full object-contain"
 					/>

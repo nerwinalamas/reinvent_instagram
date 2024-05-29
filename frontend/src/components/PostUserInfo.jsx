@@ -1,7 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { API } from "../constants/endpoints";
 import moment from "moment";
 import { Ellipsis } from "lucide-react";
 import {
@@ -44,9 +43,7 @@ const PostUserInfo = ({ post, user }) => {
 					{post.postedBy.profilePicture ? (
 						<div className="w-11 h-11 rounded-full flex flex-col bg-customBlack items-center justify-center">
 							<img
-								src={API.GET_PHOTO_URL(
-									post.postedBy.profilePicture
-								)}
+								src={post.postedBy.profilePicture}
 								alt={post.postedBy.firstName + " Photo"}
 								className="w-full h-full rounded-full object-contain"
 							/>

@@ -88,7 +88,7 @@ const SavedPost = () => {
 									{post.postedBy.profilePicture ? (
 										<div className="w-11 h-11 rounded-full flex flex-col bg-customBlack items-center justify-center">
 											<img
-												src={API.GET_PHOTO_URL(post.postedBy.profilePicture)}
+												src={post.postedBy.profilePicture}
 												alt={
 													post.postedBy.firstName +
 													" Photo"
@@ -124,7 +124,7 @@ const SavedPost = () => {
 						</div>
 						{/* PICTURE SECTION */}
 						<img
-							src={API.GET_PHOTO_URL(post.postPicture)}
+							src={post.postPicture}
 							alt="Sample Image"
 							className={`xl:max-h-[500px] object-contain rounded-md ${theme === "dark" ? "bg-customBlack" : "bg-slate-200" }`}
 						/>

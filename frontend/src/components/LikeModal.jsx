@@ -1,7 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { API } from "../constants/endpoints";
 
 const LikeModal = ({ post, user }) => {
     const theme = useSelector((state) => state.themeReducer.theme);
@@ -30,7 +29,7 @@ const LikeModal = ({ post, user }) => {
 									{user.profilePicture ? (
 										<div className="w-11 h-11 rounded-full flex flex-col bg-customBlack items-center justify-center">
 											<img
-												src={API.GET_PHOTO_URL(user.profilePicture)}
+												src={user.profilePicture}
 												alt={user.firstName + " Photo"}
 												className="w-full h-full rounded-full object-contain"
 											/>

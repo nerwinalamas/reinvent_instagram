@@ -108,7 +108,7 @@ const Home = () => {
 						<PostUserInfo post={post} user={user} />
 						{/* PICTURE SECTION */}
 						<img
-							src={API.GET_PHOTO_URL(post.postPicture)}
+							src={post.postPicture}
 							alt="post photo"
 							className={`xl:max-h-[500px] object-contain rounded-md ${
 								theme === "dark"

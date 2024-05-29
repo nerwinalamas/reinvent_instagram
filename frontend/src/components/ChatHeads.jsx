@@ -1,6 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
 import { setSelectedChat } from "../_actions/convoAction";
-import { API } from "../constants/endpoints";
 import { getChatmates } from "../api/message";
 import { useQuery } from "@tanstack/react-query";
 
@@ -28,7 +27,6 @@ const ChatHeads = () => {
 					) : isError ? (
 						<p>Error: {error}</p>
 					) : (
-						data &&
 						data.length > 0 &&
 						data.map((follow) => (
 							<div
@@ -41,9 +39,7 @@ const ChatHeads = () => {
 								{follow.profilePicture ? (
 									<div className="w-11 h-11 rounded-full flex flex-col bg-customBlack items-center justify-center">
 										<img
-											src={API.GET_PHOTO_URL(
-												follow.profilePicture
-											)}
+											src={follow.profilePicture}
 											alt={follow.firstName + " Photo"}
 											className="w-full h-full rounded-full object-contain"
 										/>
@@ -93,9 +89,7 @@ const ChatHeads = () => {
 								{follow.profilePicture ? (
 									<div className="w-11 h-11 rounded-full flex flex-col bg-customBlack items-center justify-center">
 										<img
-											src={API.GET_PHOTO_URL(
-												follow.profilePicture
-											)}
+											src={follow.profilePicture}
 											alt={follow.firstName + " Photo"}
 											className="w-full h-full rounded-full object-contain"
 										/>
