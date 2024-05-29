@@ -1,5 +1,7 @@
 const Post = require("../models/post.model");
 const User = require("../models/user.model");
+const cloudinary = require("../utils/cloudinary");
+const fs = require('fs');
 
 // CREATE POST
 const createPost = async (req, res) => {
@@ -18,7 +20,12 @@ const createPost = async (req, res) => {
 		let postPicture = "";
 
 		if (req.file) {
-			postPicture = req.file.filename;
+			const result = await cloudinary.uploader.upload(req.file.path, {
+				folder: "posts",
+			});
+
+			fs.unlinkSync(req.file.path);
+			postPicture = result.secure_url;
 		}
 
 		const post = await Post.create({
@@ -54,32 +61,42 @@ const getPostById = async (req, res) => {
 
 // UPDATE POST
 const updatePost = async (req, res) => {
-    try {
-        const postId = req.params.id;
+	try {
+		const postId = req.params.id;
 
-        let updatedFields = {};
-        if (req.body.postContent) {
-            updatedFields.postContent = req.body.postContent;
-        }
-        if (req.file) {
-            updatedFields.postPicture = req.file.filename;
-        }
+		let updatedFields = {};
+		if (req.body.postContent) {
+			updatedFields.postContent = req.body.postContent;
+		}
+		if (req.file) {
+			const result = await cloudinary.uploader.upload(req.file.path, {
+				folder: "posts",
+			});
 
-        const updatedPost = await Post.findByIdAndUpdate(postId, updatedFields, {
-            new: true,
-            runValidators: true,
-        });
+			fs.unlinkSync(req.file.path);
+			updatedFields.postPicture = result.secure_url;
+		}
 
-        if (!updatedPost) {
-            return res.status(404).json({ success: false, message: "Post not found" });
-        }
+		const updatedPost = await Post.findByIdAndUpdate(
+			postId,
+			updatedFields,
+			{
+				new: true,
+				runValidators: true,
+			}
+		);
 
-        res.status(200).json({ success: true, data: updatedPost });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
+		if (!updatedPost) {
+			return res
+				.status(404)
+				.json({ success: false, message: "Post not found" });
+		}
+
+		res.status(200).json({ success: true, data: updatedPost });
+	} catch (error) {
+		res.status(500).json({ success: false, message: error.message });
+	}
 };
-
 
 // DELETE POST
 const deletePost = async (req, res) => {
@@ -216,13 +233,13 @@ const getRandomPosts = async (req, res) => {
 			{ $sample: { size: 10 } },
 			{
 				$lookup: {
-					from: 'users',
-					localField: 'postedBy',
-					foreignField: '_id',
-					as: 'postedBy',
+					from: "users",
+					localField: "postedBy",
+					foreignField: "_id",
+					as: "postedBy",
 				},
 			},
-			{ $unwind: '$postedBy' },
+			{ $unwind: "$postedBy" },
 		]);
 
 		res.status(200).json({ success: true, data: randomPosts });
@@ -231,28 +248,33 @@ const getRandomPosts = async (req, res) => {
 	}
 };
 
-
 // ADD COMMENT IN A POST
 const createComment = async (req, res) => {
 	try {
 		const postId = req.params.id;
-        const { comment } = req.body;
+		const { comment } = req.body;
 		const userId = req.user.userId;
 
-        const post = await Post.findByIdAndUpdate(
-            postId,
-            { $push: { comments: { comment, postedBy: userId } } },
-            { new: true }
-        );
+		const post = await Post.findByIdAndUpdate(
+			postId,
+			{ $push: { comments: { comment, postedBy: userId } } },
+			{ new: true }
+		);
 
-        if (!post) {
-            return res.status(404).json({ success: false, message: "Post not found" });
-        }
+		if (!post) {
+			return res
+				.status(404)
+				.json({ success: false, message: "Post not found" });
+		}
 
-        res.status(200).json({ success: true, message: "Comment added successfully", data: post.comments });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
+		res.status(200).json({
+			success: true,
+			message: "Comment added successfully",
+			data: post.comments,
+		});
+	} catch (error) {
+		res.status(500).json({ success: false, message: error.message });
+	}
 };
 
 // GET ALL COMMENTS IN A POST
@@ -260,7 +282,10 @@ const getAllCommentsByPostId = async (req, res) => {
 	try {
 		const postId = req.params.id;
 
-		const post = await Post.findById(postId).populate("comments.postedBy", "firstName lastName");
+		const post = await Post.findById(postId).populate(
+			"comments.postedBy",
+			"firstName lastName"
+		);
 		if (!post) {
 			return res
 				.status(404)
@@ -280,71 +305,93 @@ const getAllCommentsByPostId = async (req, res) => {
 
 // DELETE COMMENT
 const deleteComment = async (req, res) => {
-    try {
-        const { postId, commentId } = req.params;
+	try {
+		const { postId, commentId } = req.params;
 
-        const post = await Post.findByIdAndUpdate(
-            postId,
-            { $pull: { comments: { _id: commentId } } },
-            { new: true }
-        );
+		const post = await Post.findByIdAndUpdate(
+			postId,
+			{ $pull: { comments: { _id: commentId } } },
+			{ new: true }
+		);
 
-        if (!post) {
-            return res.status(404).json({ success: false, message: "Post not found" });
-        }
+		if (!post) {
+			return res
+				.status(404)
+				.json({ success: false, message: "Post not found" });
+		}
 
-        res.status(200).json({ success: true, message: "Comment deleted successfully", data: post.comments });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
+		res.status(200).json({
+			success: true,
+			message: "Comment deleted successfully",
+			data: post.comments,
+		});
+	} catch (error) {
+		res.status(500).json({ success: false, message: error.message });
+	}
 };
 
 // UPDATE COMMENT
 const updateComment = async (req, res) => {
-    try {
-        const { postId, commentId } = req.params;
+	try {
+		const { postId, commentId } = req.params;
 		const { newComment } = req.body;
 
 		const post = await Post.findById(postId);
 
-        if (!post) {
-            return res.status(404).json({ success: false, message: "Post not found" });
-        }
+		if (!post) {
+			return res
+				.status(404)
+				.json({ success: false, message: "Post not found" });
+		}
 
 		const comment = post.comments.id(commentId);
-        if (!comment) {
-            return res.status(404).json({ success: false, message: "Comment not found" });
-        }
+		if (!comment) {
+			return res
+				.status(404)
+				.json({ success: false, message: "Comment not found" });
+		}
 
 		comment.comment = newComment;
-        await post.save();
+		await post.save();
 
-        res.status(200).json({ success: true, message: "Comment deleted successfully", data: post.comments });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
+		res.status(200).json({
+			success: true,
+			message: "Comment deleted successfully",
+			data: post.comments,
+		});
+	} catch (error) {
+		res.status(500).json({ success: false, message: error.message });
+	}
 };
 
 // GET COMMENT BY ID
 const getComment = async (req, res) => {
-    try {
-        const { postId, commentId } = req.params;
+	try {
+		const { postId, commentId } = req.params;
 
 		const post = await Post.findById(postId);
 
-        if (!post) {
-            return res.status(404).json({ success: false, message: "Post not found" });
-        }
+		if (!post) {
+			return res
+				.status(404)
+				.json({ success: false, message: "Post not found" });
+		}
 
 		const comment = post.comments.id(commentId);
-        if (!comment) {
-            return res.status(404).json({ success: false, message: "Comment not found" });
-        }
+		if (!comment) {
+			return res
+				.status(404)
+				.json({ success: false, message: "Comment not found" });
+		}
 
-        res.status(200).json({ success: true, message: "Comment deleted successfully", data: comment });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
+		res.status(200).json({
+			success: true,
+			message: "Comment deleted successfully",
+			data: comment,
+		});
+	} catch (error) {
+		res.status(500).json({ success: false, message: error.message });
+	}
 };
 
 // SAVE POST
@@ -355,66 +402,85 @@ const savePost = async (req, res) => {
 
 		const user = await User.findById(userId);
 
-        if (!user) {
-            return res.status(404).json({ success: false, message: "User not found" });
-        }
+		if (!user) {
+			return res
+				.status(404)
+				.json({ success: false, message: "User not found" });
+		}
 
 		const post = await Post.findById(postId);
 
 		if (!post) {
-            return res.status(404).json({ success: false, message: "Post not found" });
-        }
+			return res
+				.status(404)
+				.json({ success: false, message: "Post not found" });
+		}
 
 		if (!user.savedPosts.includes(postId)) {
-            user.savedPosts.push(postId);
-            await user.save();
-        }
+			user.savedPosts.push(postId);
+			await user.save();
+		}
 
-		res.status(200).json({ success: true, message: "Post saved successfully" });
+		res.status(200).json({
+			success: true,
+			message: "Post saved successfully",
+		});
 	} catch (error) {
 		res.status(500).json({ success: false, message: error.message });
 	}
 };
 
 const unsavePost = async (req, res) => {
-    try {
+	try {
 		const postId = req.params.id;
-        const userId = req.user.userId;
+		const userId = req.user.userId;
 
-        const user = await User.findById(userId);
+		const user = await User.findById(userId);
 
-        if (!user) {
-            return res.status(404).json({ success: false, message: "User not found" });
-        }
+		if (!user) {
+			return res
+				.status(404)
+				.json({ success: false, message: "User not found" });
+		}
 
-        user.savedPosts = user.savedPosts.filter(savedPostId => savedPostId.toString() !== postId);
-        await user.save();
+		user.savedPosts = user.savedPosts.filter(
+			(savedPostId) => savedPostId.toString() !== postId
+		);
+		await user.save();
 
-        res.status(200).json({ success: true, message: "Post unsaved successfully" });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
+		res.status(200).json({
+			success: true,
+			message: "Post unsaved successfully",
+		});
+	} catch (error) {
+		res.status(500).json({ success: false, message: error.message });
+	}
 };
 
 const getAllSavedPosts = async (req, res) => {
-    try {
-        const userId = req.user.userId;
+	try {
+		const userId = req.user.userId;
 
 		const user = await User.findById(userId).populate({
-            path: "savedPosts",
-            populate: { path: "postedBy" }
-        });
+			path: "savedPosts",
+			populate: { path: "postedBy" },
+		});
 
-        if (!user) {
-            return res.status(404).json({ success: false, message: "User not found" });
-        }
+		if (!user) {
+			return res
+				.status(404)
+				.json({ success: false, message: "User not found" });
+		}
 
-        res.status(200).json({ success: true, message: "Get all saved post successfully", data: user.savedPosts });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
+		res.status(200).json({
+			success: true,
+			message: "Get all saved post successfully",
+			data: user.savedPosts,
+		});
+	} catch (error) {
+		res.status(500).json({ success: false, message: error.message });
+	}
 };
-
 
 module.exports = {
 	createPost,
@@ -434,5 +500,5 @@ module.exports = {
 	getComment,
 	savePost,
 	unsavePost,
-	getAllSavedPosts
+	getAllSavedPosts,
 };
