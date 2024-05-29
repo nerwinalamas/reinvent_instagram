@@ -1,6 +1,8 @@
 const User = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const cloudinary = require("../utils/cloudinary");
+const fs = require('fs');
 
 const registerUser = async (req, res) => {
 	try {
@@ -154,7 +156,12 @@ const uploadPhoto = async (req, res) => {
 		let profilePicture = "";
 
 		if (req.file) {
-			profilePicture = req.file.filename;
+			const result = await cloudinary.uploader.upload(req.file.path, {
+				folder: "profilePictures",
+			});
+
+			fs.unlinkSync(req.file.path);
+			profilePicture = result.secure_url;
 		}
 
 		const user = await User.findByIdAndUpdate(userId, { profilePicture });
