@@ -145,3 +145,12 @@ export const useDeletePostProfileMutation = () => {
 		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["userPosts"] }),
 	});
 };
+
+export const useCreatePostProfileMutation = () => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: ({ postContent, postPicture }) => createPost(postContent, postPicture),
+		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["userPosts"] }),
+	});
+};
