@@ -64,11 +64,33 @@ const updatePost = async (req, res) => {
 	try {
 		const postId = req.params.id;
 
+		const post = await Post.findById({ _id: postId });
+
+		if (!post) {
+			return res
+				.status(404)
+				.json({ success: false, message: "Post not found" });
+		}
+
 		let updatedFields = {};
 		if (req.body.postContent) {
 			updatedFields.postContent = req.body.postContent;
 		}
 		if (req.file) {
+			if (post.postPicture) {
+				const publicId = post.postPicture.split("/").pop().split(".")[0];
+				await cloudinary.uploader.destroy(
+					`posts/${publicId}`,
+					function (error, result) {
+						if (error) {
+							console.log("Error: ", error);
+						} else {
+							console.log("Result: ", result);
+						}
+					}
+				);
+			}
+
 			const result = await cloudinary.uploader.upload(req.file.path, {
 				folder: "posts",
 			});
@@ -113,13 +135,16 @@ const deletePost = async (req, res) => {
 
 		if (post.postPicture) {
 			const publicId = post.postPicture.split("/").pop().split(".")[0];
-			await cloudinary.uploader.destroy(`posts/${publicId}`, function(error, result) {
-				if (error) {
-					console.log("Error: ", error)
-				} else {
-					console.log("Result: ", result)
+			await cloudinary.uploader.destroy(
+				`posts/${publicId}`,
+				function (error, result) {
+					if (error) {
+						console.log("Error: ", error);
+					} else {
+						console.log("Result: ", result);
+					}
 				}
-			});
+			);
 		}
 
 		const deletedPost = await Post.findByIdAndDelete({ _id: post._id });
