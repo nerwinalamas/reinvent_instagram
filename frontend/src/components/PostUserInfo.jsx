@@ -17,21 +17,23 @@ const PostUserInfo = ({ post, user }) => {
 	const deletePostProfileMutation = useDeletePostProfileMutation();
 
 	const handleDelete = async (postId) => {
+		const toastId = toast.loading("Deleting Post...");
 		try {
 			if (location.pathname === "/") {
 				deletePostMutation.mutate(postId, {
 					onSuccess: () => {
-						toast.success("Deleting Post Successfully!");
+						toast.success("Deleting Post Successfully!", { id: toastId });
 					},
 				});
 			} else {
 				deletePostProfileMutation.mutate(postId, {
 					onSuccess: () => {
-						toast.success("Deleting Post Successfully!");
+						toast.success("Deleting Post Successfully!", { id: toastId });
 					},
 				});
 			}
 		} catch (error) {
+			toast.error("An unexpected error occurred", { id: toastId });
 			console.log("Deleting Post Error: ", error);
 		}
 	};
