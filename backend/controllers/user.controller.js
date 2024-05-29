@@ -155,7 +155,29 @@ const uploadPhoto = async (req, res) => {
 		const userId = req.params.id;
 		let profilePicture = "";
 
+		const user = await User.findById({ _id: userId });
+
+		if (!user) {
+			return res
+				.status(404)
+				.json({ success: false, message: "User not found" });
+		}
+
 		if (req.file) {
+			if (user.profilePicture) {
+				const publicId = user.profilePicture.split("/").pop().split(".")[0];
+				await cloudinary.uploader.destroy(
+					`profilePictures/${publicId}`,
+					function (error, result) {
+						if (error) {
+							console.log("Error: ", error);
+						} else {
+							console.log("Result: ", result);
+						}
+					}
+				);
+			}
+
 			const result = await cloudinary.uploader.upload(req.file.path, {
 				folder: "profilePictures",
 			});
@@ -164,18 +186,12 @@ const uploadPhoto = async (req, res) => {
 			profilePicture = result.secure_url;
 		}
 
-		const user = await User.findByIdAndUpdate(userId, { profilePicture });
-
-		if (!user) {
-			return res
-				.status(404)
-				.json({ success: false, message: "User not found" });
-		}
+		const updatedUser = await User.findByIdAndUpdate(userId, { profilePicture });
 
 		res.status(200).json({
 			success: true,
-			message: "User picture updated successfully",
-			data: user,
+			message: "User profile picture updated successfully",
+			data: updatedUser,
 		});
 	} catch (error) {
 		res.status(500).json({ success: false, message: error.message });
