@@ -1,9 +1,9 @@
-import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import useThemeStore from "../store/useTheme";
+import useUserProfileStore from "../store/useUserProfileStore";
 
 const FollowersModal = () => {
-	const otherUser = useSelector((state) => state.otherUserReducer.otherUser);
+	const { otherUser } = useUserProfileStore();
 	const { theme } = useThemeStore();
 
 	return (
@@ -15,7 +15,7 @@ const FollowersModal = () => {
 			>
 				<h2 className="text-center font-semibold text-xl">Followers</h2>
 				<div className="max-h-96 min-h-96 overflow-y-auto flex flex-col gap-3 items-center mt-3 xl:gap-0">
-					{otherUser.followers && otherUser.followers.length > 0 ? (
+					{otherUser && otherUser.followers && otherUser.followers.length > 0 ? (
 						otherUser.followers.map((user) => (
 							<div
 								key={user._id}
