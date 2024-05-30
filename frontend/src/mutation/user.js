@@ -5,7 +5,7 @@ export const useUpdateProfilePhotoMutation = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-        mutationFn: ({ userId, profilePicture }) => updateProfilePhoto(userId, profilePicture),
+        mutationFn: ({ userId, profilePicture, token }) => updateProfilePhoto(userId, profilePicture, token),
 		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["posts", "userPosts"] }),
 	});
 };
@@ -14,7 +14,7 @@ export const useSearchUserMutation = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-        mutationFn: searchUser,
+        mutationFn: ({ isSearching, token }) => searchUser(isSearching, token),
 		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["search"] }),
 	});
 };

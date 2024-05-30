@@ -5,7 +5,7 @@ export const useCreatePostMutation = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: ({ postContent, postPicture }) => createPost(postContent, postPicture),
+		mutationFn: ({ postContent, postPicture, token }) => createPost(postContent, postPicture, token),
 		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["posts"] }),
 	});
 };
@@ -14,7 +14,7 @@ export const useUpdatePostMutation = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: ({ postId, postContent, postPicture }) => updatePost(postId, postContent, postPicture),
+		mutationFn: ({ postId, postContent, postPicture, token }) => updatePost(postId, postContent, postPicture, token),
 		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["posts"] }),
 	});
 };
@@ -23,7 +23,7 @@ export const useDeletePostMutation = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: deletePost,
+		mutationFn: ({ postId, token }) => deletePost(postId, token),
 		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["posts"] }),
 	});
 };
@@ -32,7 +32,7 @@ export const useLikePostMutation = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: likePost,
+		mutationFn: ({ postId, token }) => likePost(postId, token),
 		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["posts"] }),
 	});
 };
@@ -41,7 +41,7 @@ export const useUnLikePostMutation = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-        mutationFn: unlikePost,
+        mutationFn: ({ postId, token }) => unlikePost(postId, token),
 		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["posts"] }),
 	});
 };
@@ -50,7 +50,7 @@ export const useSavePostMutation = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-        mutationFn: savePost,
+        mutationFn: ({ postId, token }) => savePost(postId, token),
 		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["posts"] }),
 	});
 };
@@ -59,7 +59,7 @@ export const useUnsavePostMutation = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-        mutationFn: unsavePost,
+        mutationFn: ({ postId, token }) => unsavePost(postId, token),
 		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["posts"] }),
 	});
 };
@@ -68,7 +68,7 @@ export const useCommentPostMutation = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-        mutationFn: ({ postId, comment }) => createComment(postId, comment),
+        mutationFn: ({ postId, comment, token }) => createComment(postId, comment, token),
 		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["posts"] }),
 	});
 };
@@ -77,7 +77,7 @@ export const useDeleteCommentPostMutation = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-        mutationFn: ({ postId, commentId }) => deleteComment(postId, commentId),
+        mutationFn: ({ postId, commentId, token }) => deleteComment(postId, commentId, token),
 		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["posts"] }),
 	});
 };
@@ -87,7 +87,7 @@ export const useLikePostProfileMutation = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: likePost,
+		mutationFn: ({ postId, token }) => likePost(postId, token),
 		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["userPosts"] }),
 	});
 };
@@ -96,7 +96,7 @@ export const useUnLikePostProfileMutation = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-        mutationFn: unlikePost,
+        mutationFn: ({ postId, token }) => unlikePost(postId, token),
 		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["userPosts"] }),
 	});
 };
@@ -105,7 +105,7 @@ export const useSavePostProfileMutation = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-        mutationFn: savePost,
+        mutationFn: ({ postId, token }) => savePost(postId, token),
 		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["userPosts"] }),
 	});
 };
@@ -114,7 +114,7 @@ export const useUnsavePostProfileMutation = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-        mutationFn: unsavePost,
+        mutationFn: ({ postId, token }) => unsavePost(postId, token),
 		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["userPosts"] }),
 	});
 };
@@ -123,7 +123,7 @@ export const useCommentPostProfileMutation = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-        mutationFn: ({ postId, comment }) => createComment(postId, comment),
+        mutationFn: ({ postId, comment, token }) => createComment(postId, comment, token),
 		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["userPosts"] }),
 	});
 };
@@ -132,7 +132,7 @@ export const useDeleteCommentPostProfileMutation = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-        mutationFn: ({ postId, commentId }) => deleteComment(postId, commentId),
+        mutationFn: ({ postId, commentId, token }) => deleteComment(postId, commentId, token),
 		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["userPosts"] }),
 	});
 };
@@ -141,7 +141,7 @@ export const useDeletePostProfileMutation = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: deletePost,
+		mutationFn: ({ postId, token }) => deletePost(postId, token),
 		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["userPosts"] }),
 	});
 };
