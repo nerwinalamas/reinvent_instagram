@@ -1,14 +1,6 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setUser } from "../_actions/userAction";
 import { setClickedPost } from "../_actions/postsAction";
-import { API } from "../constants/endpoints";
-
-import PostUserInfo from "../components/PostUserInfo";
-import PostReaction from "../components/PostReaction";
-import PostModal from "../components/PostModal";
-
-import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { getPosts } from "../api/post";
 import {
@@ -18,41 +10,42 @@ import {
 	useUnsavePostMutation,
 } from "../mutation/post";
 import useAuthStore from "../store/useAuth";
+import { useCurrentUserMutation } from "../mutation/user";
+import PostUserInfo from "../components/PostUserInfo";
+import PostReaction from "../components/PostReaction";
+import PostModal from "../components/PostModal";
 
 const Home = () => {
-	const user = useSelector((state) => state.userReducer.user);
 	const clickedPost = useSelector((state) => state.postReducer.clickedPost);
 	const theme = useSelector((state) => state.themeReducer.theme);
-	const { token } = useAuthStore();
+	const { token, setUser, user } = useAuthStore();
 
 	const likePostMutation = useLikePostMutation();
 	const unlikePostMutation = useUnLikePostMutation();
 	const savePostMutation = useSavePostMutation();
 	const unsavePostMutation = useUnsavePostMutation();
+	const currentUserMutation = useCurrentUserMutation();
 
-	const { data, isLoading, isError, error } = useQuery({
+	const {
+		data: posts,
+		isLoading,
+		isError,
+		error,
+	} = useQuery({
 		queryKey: ["posts", token],
 		queryFn: () => getPosts(token),
+		enabled: !!token && user !== null,
 	});
 
 	const dispatch = useDispatch();
 
-	const fetchUser = async () => {
-		try {
-			const response = await axios.get(API.LOGGED_IN_USER, {
-				headers: {
-					Authorization: `Bearer ${localStorage.getItem("token")}`,
-				},
-			});
-			dispatch(setUser(response.data.data));
-		} catch (error) {
-			console.log("Error: ", error);
-		}
-	};
-
 	useEffect(() => {
-		fetchUser();
-	}, [dispatch]);
+		currentUserMutation.mutate(token, {
+			onSuccess: (data) => {
+				setUser(data);
+			}
+		})
+	}, [token])
 
 	const handleClick = (post) => {
 		dispatch(setClickedPost(post));
@@ -90,8 +83,8 @@ const Home = () => {
 				<p>Loading...</p>
 			) : isError ? (
 				<p>Error: {error}</p>
-			) : data.length > 0 ? (
-				data.map((post) => (
+			) : posts && posts.length > 0 ? (
+				posts.map((post) => (
 					<div
 						key={post._id}
 						className={`w-80 p-3  rounded-md flex flex-col gap-2 md:w-96 md:gap-5 lg:p-5 xl:w-[600px] xl:gap-1 ${
