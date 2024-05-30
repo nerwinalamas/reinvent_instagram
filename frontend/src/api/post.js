@@ -197,3 +197,17 @@ export const getExplorePosts = async (token) => {
 		console.log("Get Explore Posts Error: ", error);
 	}
 };
+
+export const getSavedPosts = async (token) => {
+	try {
+		const response = await axios.get(API.GET_SAVED_POSTS, {
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		});
+
+		return response.data.data;
+	} catch (error) {
+		console.log("Get Saved Posts Error: ", error);
+	}
+};
