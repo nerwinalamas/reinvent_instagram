@@ -6,10 +6,9 @@ import { setTheme } from "../_actions/themeAction";
 import useAuthStore from "../store/useAuth";
 
 const More = () => {
-	const user = useSelector((state) => state.userReducer.user);
 	const [isOpen, setIsOpen] = useState(false);
 	const theme = useSelector((state) => state.themeReducer.theme);
-	const { logout } = useAuthStore();
+	const { logout, user } = useAuthStore();
 
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
@@ -31,14 +30,14 @@ const More = () => {
 
 	return (
 		<div className="dropdown dropdown-bottom dropdown-end cursor-pointer">
-			{user.profilePicture ? (
+			{user && user.profilePicture ? (
 				<div
 					onClick={() => setIsOpen((prev) => !prev)}
 					tabIndex={0}
 					className="w-11 h-11 rounded-full flex flex-col bg-customBlack items-center justify-center"
 				>
 					<img
-						src={user.profilePicture}
+						src={user && user.profilePicture}
 						alt={user.firstName + " Photo"}
 						className="w-full h-full rounded-full object-contain"
 					/>
@@ -50,7 +49,7 @@ const More = () => {
 					className="w-11 h-11 rounded-full bg-customWhite text-customBlack flex items-center justify-center"
 				>
 					<p className="capitalize font-bold text-xl">
-						{user.firstName && user.firstName.charAt(0)}
+						{user && user.firstName && user.firstName.charAt(0)}
 					</p>
 				</div>
 			)}
@@ -79,15 +78,15 @@ const More = () => {
 							onClick={handleItemClick}
 							className="flex gap-5"
 						>
-							{user.profilePicture ? (
+							{user && user.profilePicture ? (
 								<div
 									onClick={() => setIsOpen((prev) => !prev)}
 									tabIndex={0}
 									className="w-11 h-11 rounded-full flex flex-col bg-customBlack items-center justify-center"
 								>
 									<img
-										src={user.profilePicture}
-										alt={user.firstName + " Photo"}
+										src={user && user.profilePicture}
+										alt={user && user.firstName + " Photo"}
 										className="w-full h-full rounded-full object-contain"
 									/>
 								</div>

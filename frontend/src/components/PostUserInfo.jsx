@@ -13,8 +13,7 @@ import useAuthStore from "../store/useAuth";
 const PostUserInfo = ({ post, user }) => {
 	const location = useLocation();
 	const theme = useSelector((state) => state.themeReducer.theme);
-	const currentUser = useSelector((state) => state.userReducer.user);
-	const { token } = useAuthStore();
+	const { token, user: currentUser } = useAuthStore();
 	const deletePostMutation = useDeletePostMutation();
 	const deletePostProfileMutation = useDeletePostProfileMutation();
 
@@ -22,17 +21,27 @@ const PostUserInfo = ({ post, user }) => {
 		const toastId = toast.loading("Deleting Post...");
 		try {
 			if (location.pathname === "/") {
-				deletePostMutation.mutate({ postId, token }, {
-					onSuccess: () => {
-						toast.success("Deleting Post Successfully!", { id: toastId });
-					},
-				});
+				deletePostMutation.mutate(
+					{ postId, token },
+					{
+						onSuccess: () => {
+							toast.success("Deleting Post Successfully!", {
+								id: toastId,
+							});
+						},
+					}
+				);
 			} else {
-				deletePostProfileMutation.mutate({ postId, token }, {
-					onSuccess: () => {
-						toast.success("Deleting Post Successfully!", { id: toastId });
-					},
-				});
+				deletePostProfileMutation.mutate(
+					{ postId, token },
+					{
+						onSuccess: () => {
+							toast.success("Deleting Post Successfully!", {
+								id: toastId,
+							});
+						},
+					}
+				);
 			}
 		} catch (error) {
 			toast.error("An unexpected error occurred", { id: toastId });

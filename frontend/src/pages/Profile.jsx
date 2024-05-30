@@ -28,9 +28,8 @@ const Profile = () => {
 		(state) => state.otherUserReducer.clickedOtherPost
 	);
 
-	const currentUser = useSelector((state) => state.userReducer.user);
 	const theme = useSelector((state) => state.themeReducer.theme);
-	const { token } = useAuthStore();
+	const { token, user: currentUser } = useAuthStore();
 	const dispatch = useDispatch();
 
 	const likePostMutation = useLikePostProfileMutation();

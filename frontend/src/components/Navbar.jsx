@@ -12,9 +12,8 @@ const Navbar = () => {
 	const [isOpen, setIsOpen] = useState(false);
 	const [isSearching, setIsSearching] = useState("");
 
-	const user = useSelector((state) => state.userReducer.user);
 	const theme = useSelector((state) => state.themeReducer.theme);
-	const { token, logout } = useAuthStore();
+	const { token, logout, user } = useAuthStore();
 
 	const searchUserMutation = useSearchUserMutation();
 	const navigate = useNavigate();

@@ -12,10 +12,9 @@ import { getUserPosts } from "../api/post";
 import useAuthStore from "../store/useAuth";
 
 const UserProfile = ({ userId }) => {
-	const currentUser = useSelector((state) => state.userReducer.user);
 	const otherUser = useSelector((state) => state.otherUserReducer.otherUser)
 	const theme = useSelector((state) => state.themeReducer.theme);
-	const { token } = useAuthStore();
+	const { token, user: currentUser } = useAuthStore();
 
 	const { data } = useQuery({
 		queryKey: ["userPosts", userId, token],

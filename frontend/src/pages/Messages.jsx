@@ -8,12 +8,13 @@ import MessageTitle from "../components/MessageTitle";
 import MessageSection from "../components/MessageSection";
 import ChatPlaceholder from "../components/ChatPlaceholder";
 import ChatHeads from "../components/ChatHeads";
+import useAuthStore from "../store/useAuth";
 
 const Messages = () => {
 	const { socket, setReceivingCall, setCaller, setCallerSignal, setName } = useSocket();
-	const user = useSelector((state) => state.userReducer.user);
 	const selectedChat = useSelector((state) => state.convoReducer.selectedChat);
 	const theme = useSelector((state) => state.themeReducer.theme);
+	const { user } = useAuthStore();
 
 	const dispatch = useDispatch();
 

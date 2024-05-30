@@ -7,9 +7,8 @@ import { useQuery } from "@tanstack/react-query";
 import useAuthStore from "../store/useAuth";
 
 const SavedPost = () => {
-	const user = useSelector((state) => state.userReducer.user);
 	const theme = useSelector((state) => state.themeReducer.theme);
-	const { token } = useAuthStore();
+	const { token, user } = useAuthStore();
 	const savePostMutation = useSavePostMutation();
 	const unsavePostMutation = useUnsavePostMutation();
 

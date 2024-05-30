@@ -9,8 +9,7 @@ import { getConversation } from "../api/message";
 import useAuthStore from "../store/useAuth";
 
 const MessageSection = () => {
-	const user = useSelector((state) => state.userReducer.user);
-	const { token } = useAuthStore()
+	const { token, user } = useAuthStore()
 	const selectedChat = useSelector(
 		(state) => state.convoReducer.selectedChat
 	);

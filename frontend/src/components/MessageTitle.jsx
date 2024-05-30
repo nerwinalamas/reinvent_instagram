@@ -4,10 +4,11 @@ import { useSelector } from "react-redux";
 import { useSocket } from "../context/SocketContext";
 import { Phone, Video } from "lucide-react";
 import Peer from "simple-peer";
+import useAuthStore from "../store/useAuth";
 
 const MessageTitle = () => {
 	const selectedChat = useSelector((state) => state.convoReducer.selectedChat);
-    const user = useSelector((state) => state.userReducer.user);
+	const { user } = useAuthStore();
 
     const navigate = useNavigate()
 

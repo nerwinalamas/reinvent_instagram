@@ -9,8 +9,7 @@ const MessageForm = () => {
 	const [message, setMessage] = useState("");
 	const theme = useSelector((state) => state.themeReducer.theme);
     const selectedChat = useSelector((state) => state.convoReducer.selectedChat);
-    const user = useSelector((state) => state.userReducer.user);
-	const { token } = useAuthStore()
+	const { token, user } = useAuthStore()
 	const sendMessageMutation = useSendMessageMutation();
 	const { socket } = useSocket();
 

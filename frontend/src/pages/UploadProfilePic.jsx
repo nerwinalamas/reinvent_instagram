@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { useUpdateProfilePhotoMutation } from "../mutation/user";
 import useAuthStore from "../store/useAuth";
@@ -9,8 +8,7 @@ const UploadProfilePic = () => {
 	const [profilePicture, setProfilePicture] = useState(null);
 	const [profilePictureError, setProfilePictureError] = useState("");
 
-	const currentUser = useSelector((state) => state.userReducer.user);
-	const { token } = useAuthStore();
+	const { token, user: currentUser } = useAuthStore();
 	const navigate = useNavigate();
 
 	const updateProfilePhotoMutation = useUpdateProfilePhotoMutation();
