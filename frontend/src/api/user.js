@@ -50,3 +50,17 @@ export const getUser = async (userId, token) => {
 		console.log("Calling User Error: ", error);
 	}
 };
+
+export const loggedInUser = async (token) => {
+	try {
+		const response = await axios.get(API.LOGGED_IN_USER, {
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		});
+
+		return response.data.data;
+	} catch (error) {
+		console.log("Get Logged In User Error: ", error);
+	}
+};
