@@ -1,85 +1,52 @@
-import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { unsavedPosts } from "../_actions/userAction";
-import { API } from "../constants/endpoints";
-
+import { useSelector } from "react-redux";
 import { Bookmark } from "lucide-react";
-import axios from "axios";
 import moment from "moment";
+import { useSavePostMutation, useUnsavePostMutation } from "../mutation/post";
+import { useQuery } from "@tanstack/react-query";
+import useAuthStore from "../store/useAuth";
 
 const SavedPost = () => {
-	const [savedPosts, setSavedPosts] = useState([]);
-    const user = useSelector((state) => state.userReducer.user);
-	const theme = useSelector((state) => state.themeReducer.theme)
+	const user = useSelector((state) => state.userReducer.user);
+	const theme = useSelector((state) => state.themeReducer.theme);
+	const { token } = useAuthStore();
+	const savePostMutation = useSavePostMutation();
+	const unsavePostMutation = useUnsavePostMutation();
 
-    const dispatch = useDispatch()
+	const { data, isLoading, isError, error } = useQuery({
+		queryKey: ["posts", token],
+		queryFn: () => getSavedPosts(token),
+	});
 
-	const getSavedPosts = async () => {
-		try {
-			const response = await axios.get(
-				API.GET_SAVED_POSTS,
-				{
-					headers: {
-						Authorization: `Bearer ${localStorage.getItem(
-							"token"
-						)}`,
-					},
-				}
-			);
-			setSavedPosts(response.data.data);
-		} catch (error) {
-			console.log("Get Posts Error: ", error);
-		}
-	};
-
-	useEffect(() => {
-		getSavedPosts();
-	}, []);
-
-    const handleSavePost = async (postId, isSaved) => {
+	const handleSavePost = async (postId, isSaved) => {
 		try {
 			if (isSaved) {
-				const response = await axios.delete(
-					API.UNSAVE_POST(postId),
-					{
-						headers: {
-							Authorization: `Bearer ${localStorage.getItem(
-								"token"
-							)}`,
-						},
-					}
-				);
-				dispatch(unsavedPosts(postId));
+				unsavePostMutation.mutate(postId, token);
 			} else {
-				const response = await axios.post(
-					API.SAVE_POST(postId),
-					{},
-					{
-						headers: {
-							Authorization: `Bearer ${localStorage.getItem(
-								"token"
-							)}`,
-						},
-					}
-				);
-				dispatch(savedPosts(postId));
+				savePostMutation.mutate(postId, token);
 			}
-            getSavedPosts();
 		} catch (error) {
-			console.log("Save Post Error: ", error);
+			console.log("Save/Unsave Post Error: ", error);
 		}
 	};
 
 	return (
 		<div className="p-5 flex flex-col gap-5 justify-center items-center">
-			<h1 className="text-2xl font-bold self-start md:px-20 lg:text-2xl xl:px-36">Saved posts</h1>
+			<h1 className="text-2xl font-bold self-start md:px-20 lg:text-2xl xl:px-36">
+				Saved posts
+			</h1>
 
-			{savedPosts.length > 0 ? (
-				savedPosts.map((post) => (
+			{isLoading ? (
+				<p>Loading...</p>
+			) : isError ? (
+				<p>Error: {error}</p>
+			) : data.length > 0 ? (
+				data.map((post) => (
 					<div
 						key={post._id}
-						className={`w-80 p-3 rounded-md flex flex-col gap-2 md:w-96 md:gap-5 lg:p-5 xl:w-[600px] xl:gap-1 ${theme === "dark" ? "bg-customGray" : "bg-slate-100" }`}
+						className={`w-80 p-3 rounded-md flex flex-col gap-2 md:w-96 md:gap-5 lg:p-5 xl:w-[600px] xl:gap-1 ${
+							theme === "dark" ? "bg-customGray" : "bg-slate-100"
+						}`}
 					>
 						{/* USER INFO */}
 						<div className="flex justify-between items-center">
@@ -88,7 +55,9 @@ const SavedPost = () => {
 									{post.postedBy.profilePicture ? (
 										<div className="w-11 h-11 rounded-full flex flex-col bg-customBlack items-center justify-center">
 											<img
-												src={post.postedBy.profilePicture}
+												src={
+													post.postedBy.profilePicture
+												}
 												alt={
 													post.postedBy.firstName +
 													" Photo"
@@ -126,25 +95,40 @@ const SavedPost = () => {
 						<img
 							src={post.postPicture}
 							alt="Sample Image"
-							className={`xl:max-h-[500px] object-contain rounded-md ${theme === "dark" ? "bg-customBlack" : "bg-slate-200" }`}
+							className={`xl:max-h-[500px] object-contain rounded-md ${
+								theme === "dark"
+									? "bg-customBlack"
+									: "bg-slate-200"
+							}`}
 						/>
 						<div className="flex flex-col gap-3">
 							{/* REACTION SECTION */}
 							<div className="flex justify-between">
-                                <div></div>
+								<div></div>
 								<Bookmark
-                                    className="cursor-pointer"
-                                    title="Save"
-                                    onClick={() => handleSavePost(post._id, user && user.savedPosts && user.savedPosts.includes(post._id))}
-                                    color={
-                                        user && user.savedPosts && user.savedPosts.includes(post._id)
-                                            ? "yellow"
-                                            : "white"
-                                    }
-                                />
+									className="cursor-pointer"
+									title="Save"
+									onClick={() =>
+										handleSavePost(
+											post._id,
+											user &&
+												user.savedPosts &&
+												user.savedPosts.includes(
+													post._id
+												)
+										)
+									}
+									color={
+										user &&
+										user.savedPosts &&
+										user.savedPosts.includes(post._id)
+											? "yellow"
+											: "white"
+									}
+								/>
 							</div>
 						</div>
-                        {/* POST DESCRIPTION SECTION */}
+						{/* POST DESCRIPTION SECTION */}
 						<div className="text-sm p-2 line-clamp-1">
 							{post.postContent}
 						</div>
