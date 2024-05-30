@@ -1,4 +1,3 @@
-import React from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import useThemeStore from "../store/useTheme";
@@ -13,7 +12,7 @@ const SearchResult = () => {
 		<div className="p-5 flex flex-col items-center">
 			{searchResults.length > 0 ? (
 				searchResults.map((result) => (
-					<div className={`flex items-center gap-3  rounded-lg p-5 md:w-96 lg:w-[60vw] xl:mb-3 ${theme === "dark" ? "bg-customGray" : "bg-slate-200" }`}>
+					<div key={result._id} className={`flex items-center gap-3  rounded-lg p-5 md:w-96 lg:w-[60vw] xl:mb-3 ${theme === "dark" ? "bg-customGray" : "bg-slate-200" }`}>
 						<Link to={`/profile/${result._id}`}>
 							{result.profilePicture ? (
 								<div className="w-11 h-11 rounded-full flex flex-col bg-customBlack items-center justify-center">
