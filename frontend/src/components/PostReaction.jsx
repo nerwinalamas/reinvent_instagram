@@ -20,10 +20,10 @@ const PostReaction = ({
 						className="cursor-pointer"
 						title="Like"
 						onClick={() =>
-							handleLike(post._id, post.likes.some(like => like._id === user._id))
+							handleLike(post._id, post.likes.some(like => like._id === user && user._id))
 						}
 						color={
-							post.likes.some(like => like._id === user._id)
+							post.likes.some(like => like._id === user && user._id)
 								? "green"
 								: theme === "dark"
 								? "white"
@@ -43,11 +43,11 @@ const PostReaction = ({
 					onClick={() =>
 						handleSavePost(
 							post._id,
-							user.savedPosts?.includes(post._id)
+							user && user.savedPosts?.includes(post._id)
 						)
 					}
 					color={
-						user.savedPosts?.includes(post._id) ? "yellow" : "white"
+						user && user.savedPosts?.includes(post._id) ? "yellow" : "white"
 					}
 				/>
 			</div>
