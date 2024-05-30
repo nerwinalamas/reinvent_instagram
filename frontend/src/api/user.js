@@ -1,7 +1,7 @@
 import { API } from "../constants/endpoints";
 import axios from "axios";
 
-export const updateProfilePhoto = async (userId, profilePicture) => {
+export const updateProfilePhoto = async (userId, profilePicture, token) => {
 	try {
 		const formData = new FormData();
 		formData.append("profilePicture", profilePicture);
@@ -12,7 +12,7 @@ export const updateProfilePhoto = async (userId, profilePicture) => {
 			{
 				headers: {
 					"Content-Type": "multipart/form-data",
-					Authorization: `Bearer ${localStorage.getItem("token")}`,
+					Authorization: `Bearer ${token}`,
 				},
 			}
 		);
@@ -23,11 +23,11 @@ export const updateProfilePhoto = async (userId, profilePicture) => {
 	}
 };
 
-export const searchUser = async (isSearching) => {
+export const searchUser = async (isSearching, token) => {
 	try {
 		const response = await axios.get(API.SEARCH_USER(isSearching), {
 			headers: {
-				Authorization: `Bearer ${localStorage.getItem("token")}`,
+				Authorization: `Bearer ${token}`,
 			},
 		});
 
@@ -37,11 +37,11 @@ export const searchUser = async (isSearching) => {
 	}
 };
 
-export const getUser = async (userId) => {
+export const getUser = async (userId, token) => {
 	try {
 		const response = await axios.get(API.GET_USER(userId), {
 			headers: {
-				Authorization: `Bearer ${localStorage.getItem("token")}`,
+				Authorization: `Bearer ${token}`,
 			},
 		});
 

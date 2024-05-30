@@ -1,11 +1,11 @@
 import { API } from "../constants/endpoints";
 import axios from "axios";
 
-export const getConversation = async (userId) => {
+export const getConversation = async (userId, token) => {
 	try {
 		const response = await axios.get(API.GET_CONVERSATION(userId), {
 			headers: {
-				Authorization: `Bearer ${localStorage.getItem("token")}`,
+				Authorization: `Bearer ${token}`,
 			},
 		});
 
@@ -15,11 +15,11 @@ export const getConversation = async (userId) => {
 	}
 };
 
-export const getChatmates = async () => {
+export const getChatmates = async (token) => {
 	try {
 		const response = await axios.get(API.FOLLOWING, {
 			headers: {
-				Authorization: `Bearer ${localStorage.getItem("token")}`,
+				Authorization: `Bearer ${token}`,
 			},
 		});
 
@@ -29,14 +29,14 @@ export const getChatmates = async () => {
 	}
 };
 
-export const sendMessage = async (userId, message) => {
+export const sendMessage = async (userId, message, token) => {
 	try {
 		const response = await axios.post(
 			API.SEND_MESSAGE(userId),
 			{ message },
 			{
 				headers: {
-					Authorization: `Bearer ${localStorage.getItem("token")}`,
+					Authorization: `Bearer ${token}`,
 				},
 			}
 		);

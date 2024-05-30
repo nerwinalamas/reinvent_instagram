@@ -1,11 +1,11 @@
 import { API } from "../constants/endpoints";
 import axios from "axios";
 
-export const getPosts = async () => {
+export const getPosts = async (token) => {
 	try {
 		const response = await axios.get(API.GET_POSTS, {
 			headers: {
-				Authorization: `Bearer ${localStorage.getItem("token")}`,
+				Authorization: `Bearer ${token}`,
 			},
 		});
 
@@ -15,7 +15,7 @@ export const getPosts = async () => {
 	}
 };
 
-export const createPost = async (postContent, postPicture) => {
+export const createPost = async (postContent, postPicture, token) => {
 	try {
 		const formData = new FormData();
 		formData.append("postContent", postContent);
@@ -24,7 +24,7 @@ export const createPost = async (postContent, postPicture) => {
 		const response = await axios.post(API.CREATE_POST, formData, {
 			headers: {
 				"Content-Type": "multipart/form-data",
-				Authorization: `Bearer ${localStorage.getItem("token")}`,
+				Authorization: `Bearer ${token}`,
 			},
 		});
 
@@ -34,7 +34,7 @@ export const createPost = async (postContent, postPicture) => {
 	}
 };
 
-export const updatePost = async (postId, postContent, postPicture) => {
+export const updatePost = async (postId, postContent, postPicture, token) => {
 	try {
 		const formData = new FormData();
 		formData.append("postContent", postContent);
@@ -43,7 +43,7 @@ export const updatePost = async (postId, postContent, postPicture) => {
 		const response = await axios.put(API.UPDATE_POST(postId), formData, {
 			headers: {
 				"Content-Type": "multipart/form-data",
-				Authorization: `Bearer ${localStorage.getItem("token")}`,
+				Authorization: `Bearer ${token}`,
 			},
 		});
 
@@ -53,11 +53,11 @@ export const updatePost = async (postId, postContent, postPicture) => {
 	}
 };
 
-export const deletePost = async (postId) => {
+export const deletePost = async (postId, token) => {
 	try {
 		const response = await axios.delete(API.DELETE_POST(postId), {
 			headers: {
-				Authorization: `Bearer ${localStorage.getItem("token")}`,
+				Authorization: `Bearer ${token}`,
 			},
 		});
 
@@ -67,11 +67,11 @@ export const deletePost = async (postId) => {
 	}
 };
 
-export const getUserPosts = async (userId) => {
+export const getUserPosts = async (userId, token) => {
 	try {
 		const response = await axios.get(API.GET_USER_POSTS(userId), {
 			headers: {
-				Authorization: `Bearer ${localStorage.getItem("token")}`,
+				Authorization: `Bearer ${token}`,
 			},
 		});
 
@@ -81,14 +81,14 @@ export const getUserPosts = async (userId) => {
 	}
 };
 
-export const likePost = async (postId) => {
+export const likePost = async (postId, token) => {
 	try {
 		const response = await axios.post(
 			API.LIKE_POST(postId),
 			{},
 			{
 				headers: {
-					Authorization: `Bearer ${localStorage.getItem("token")}`,
+					Authorization: `Bearer ${token}`,
 				},
 			}
 		);
@@ -99,14 +99,14 @@ export const likePost = async (postId) => {
 	}
 };
 
-export const unlikePost = async (postId) => {
+export const unlikePost = async (postId, token) => {
 	try {
 		const response = await axios.post(
 			API.UNLIKE_POST(postId),
 			{},
 			{
 				headers: {
-					Authorization: `Bearer ${localStorage.getItem("token")}`,
+					Authorization: `Bearer ${token}`,
 				},
 			}
 		);
@@ -117,14 +117,14 @@ export const unlikePost = async (postId) => {
 	}
 };
 
-export const savePost = async (postId) => {
+export const savePost = async (postId, token) => {
 	try {
 		const response = await axios.post(
 			API.SAVE_POST(postId),
 			{},
 			{
 				headers: {
-					Authorization: `Bearer ${localStorage.getItem("token")}`,
+					Authorization: `Bearer ${token}`,
 				},
 			}
 		);
@@ -135,11 +135,11 @@ export const savePost = async (postId) => {
 	}
 };
 
-export const unsavePost = async (postId) => {
+export const unsavePost = async (postId, token) => {
 	try {
 		const response = await axios.delete(API.UNSAVE_POST(postId), {
 			headers: {
-				Authorization: `Bearer ${localStorage.getItem("token")}`,
+				Authorization: `Bearer ${token}`,
 			},
 		});
 
@@ -149,14 +149,14 @@ export const unsavePost = async (postId) => {
 	}
 };
 
-export const createComment = async (postId, comment) => {
+export const createComment = async (postId, comment, token) => {
 	try {
 		const response = await axios.post(
 			API.CREATE_COMMENT(postId),
 			{ comment },
 			{
 				headers: {
-					Authorization: `Bearer ${localStorage.getItem("token")}`,
+					Authorization: `Bearer ${token}`,
 				},
 			}
 		);
@@ -167,13 +167,13 @@ export const createComment = async (postId, comment) => {
 	}
 };
 
-export const deleteComment = async (postId, commentId) => {
+export const deleteComment = async (postId, commentId, token) => {
 	try {
 		const response = await axios.delete(
 			API.DELETE_COMMENT(postId, commentId),
 			{
 				headers: {
-					Authorization: `Bearer ${localStorage.getItem("token")}`,
+					Authorization: `Bearer ${token}`,
 				},
 			}
 		);
@@ -184,11 +184,11 @@ export const deleteComment = async (postId, commentId) => {
 	}
 };
 
-export const getExplorePosts = async () => {
+export const getExplorePosts = async (token) => {
 	try {
 		const response = await axios.get(API.GET_EXPLORE_POSTS, {
 			headers: {
-				Authorization: `Bearer ${localStorage.getItem("token")}`,
+				Authorization: `Bearer ${token}`,
 			},
 		});
 
