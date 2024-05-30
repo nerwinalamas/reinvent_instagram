@@ -8,7 +8,6 @@ import { useQuery } from "@tanstack/react-query";
 import { getConversation } from "../api/message";
 
 const MessageSection = () => {
-	const convo = useSelector((state) => state.convoReducer.convo);
 	const user = useSelector((state) => state.userReducer.user);
 	const selectedChat = useSelector(
 		(state) => state.convoReducer.selectedChat
@@ -63,8 +62,10 @@ const MessageSection = () => {
     }, [refetch, user._id, socket]); 
 
 	useEffect(() => {
-		scrollToBottom();
-	}, [convo, receivingCall]);
+		if (data?.messages) {
+			scrollToBottom();
+		}
+	}, [data?.messages, receivingCall]);
 
 	const answerCall = (id) => {
 		setCallAccepted(true);
