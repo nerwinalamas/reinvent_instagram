@@ -47,7 +47,7 @@ export const getUser = async (userId, token) => {
 
 		return response.data.data;
 	} catch (error) {
-		console.log("Calling User Error: ", error);
+		console.log("Get User Error: ", error);
 	}
 };
 
