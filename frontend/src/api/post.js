@@ -211,3 +211,20 @@ export const getSavedPosts = async (token) => {
 		console.log("Get Saved Posts Error: ", error);
 	}
 };
+
+export const getPost = async (postId, token) => {
+	try {
+		const response = await axios.get(
+			API.READ_POST(postId),
+			{
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			}
+		);
+
+		return response.data.data;
+	} catch (error) {
+		console.error("Get Post Update Error:", error);
+	}
+};
