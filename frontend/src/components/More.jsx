@@ -1,17 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
 import { Bookmark, Compass, Home, LogOut, Moon, Sun } from "lucide-react";
-import { setTheme } from "../_actions/themeAction";
 import useAuthStore from "../store/useAuth";
+import useThemeStore from "../store/useTheme";
 
 const More = () => {
 	const [isOpen, setIsOpen] = useState(false);
-	const theme = useSelector((state) => state.themeReducer.theme);
 	const { logout, user } = useAuthStore();
+	const { theme, setTheme } = useThemeStore();
 
 	const navigate = useNavigate();
-	const dispatch = useDispatch();
 
 	const handleLogout = () => {
 		logout();
@@ -24,8 +22,7 @@ const More = () => {
 
 	const toggleTheme = () => {
 		const newTheme = theme === "dark" ? "light" : "dark";
-		dispatch(setTheme(newTheme));
-		localStorage.setItem("theme", newTheme);
+		setTheme(newTheme);
 	};
 
 	return (
