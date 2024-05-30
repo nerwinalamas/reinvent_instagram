@@ -4,6 +4,7 @@ import {
 	Routes,
 	Route,
 	Outlet,
+	Navigate,
 } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import Navbar from "./components/Navbar";
@@ -21,12 +22,23 @@ import Call from "./pages/Call";
 import SavedPost from "./pages/SavedPost";
 import SearchResult from "./pages/SearchResult";
 import { useSelector } from "react-redux";
+import useAuthStore from "./store/useAuth";
+
+const ProtectedOutlet = () => {
+	const { isAuthenticated } = useAuthStore();
+
+	if (!isAuthenticated) {
+		return <Navigate to="/login" />;
+	}
+
+	return <Outlet />;
+};
 
 const AppLayout = () => {
 	return (
 		<div>
 			<Navbar />
-			<Outlet />
+			<ProtectedOutlet />
 		</div>
 	);
 };
