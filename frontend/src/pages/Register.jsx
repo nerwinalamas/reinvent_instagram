@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { validateRegistrationForm } from "../helpers/formValidation";
-import { API } from "../constants/endpoints";
-
-import axios from "axios";
 import toast from "react-hot-toast";
+import { useRegisterUserMutation } from "../mutation/auth";
 
 const Register = () => {
 	const [email, setEmail] = useState("");
@@ -19,6 +17,7 @@ const Register = () => {
 	const [userNameError, setUserNameError] = useState("");
 	const [passwordError, setPasswordError] = useState("");
 
+	const registerUserMutation = useRegisterUserMutation();
 	const navigate = useNavigate();
 
 	const handleSubmit = async (e) => {
@@ -40,32 +39,33 @@ const Register = () => {
 		)
 			return;
 
+		const toastId = toast.loading("Loading...");
+
 		try {
-			const response = await axios.post(
-				API.REGISTER,
+			registerUserMutation.mutate(
 				{
 					email,
 					firstName,
 					lastName,
 					userName,
 					password,
+				},
+				{
+					onSuccess: (data) => {
+						toast.success(data.message, { id: toastId });
+						navigate("/login");
+					},
+					onError: () => {
+						toast.error("An error occurred", { id: toastId });
+						console.log("Registration Error: ", error);
+					},
 				}
 			);
-			if (response) {
-				toast.success(response.data.message);
-				navigate("/login");
-			}
 		} catch (error) {
 			toast.error(error.response.data.message);
 			console.log("Registration Error: ", error.response.data.message);
 		}
 	};
-
-	useEffect(() => {
-		if (localStorage.getItem("token")) {
-			navigate("/");
-		}
-	}, []);
 
 	return (
 		<main className="h-screen flex items-center justify-center">
