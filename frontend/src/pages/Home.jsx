@@ -14,11 +14,12 @@ import { useCurrentUserMutation } from "../mutation/user";
 import PostUserInfo from "../components/PostUserInfo";
 import PostReaction from "../components/PostReaction";
 import PostModal from "../components/PostModal";
+import useThemeStore from "../store/useTheme";
 
 const Home = () => {
 	const clickedPost = useSelector((state) => state.postReducer.clickedPost);
-	const theme = useSelector((state) => state.themeReducer.theme);
 	const { token, setUser, user } = useAuthStore();
+	const { theme } = useThemeStore();
 
 	const likePostMutation = useLikePostMutation();
 	const unlikePostMutation = useUnLikePostMutation();

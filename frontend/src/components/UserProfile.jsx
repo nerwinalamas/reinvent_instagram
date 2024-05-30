@@ -10,11 +10,12 @@ import { followOtherUser, unfollowOtherUser } from "../_actions/otherUserAction"
 import { useQuery } from "@tanstack/react-query";
 import { getUserPosts } from "../api/post";
 import useAuthStore from "../store/useAuth";
+import useThemeStore from "../store/useTheme";
 
 const UserProfile = ({ userId }) => {
 	const otherUser = useSelector((state) => state.otherUserReducer.otherUser)
-	const theme = useSelector((state) => state.themeReducer.theme);
 	const { token, user: currentUser } = useAuthStore();
+	const { theme } = useThemeStore();
 
 	const { data } = useQuery({
 		queryKey: ["userPosts", userId, token],

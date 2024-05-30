@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
 import moment from "moment";
 import { Bookmark, MessageCircle, Redo2, ThumbsUp } from "lucide-react";
 import {
@@ -11,6 +10,7 @@ import {
 } from "../mutation/post";
 import toast from "react-hot-toast";
 import useAuthStore from "../store/useAuth";
+import useThemeStore from "../store/useTheme";
 
 const PostModal = ({
 	user,
@@ -21,8 +21,8 @@ const PostModal = ({
 }) => {
 	const location = useLocation();
 	const [newComment, setNewComment] = useState("");
-	const theme = useSelector((state) => state.themeReducer.theme);
 	const { token } = useAuthStore();
+	const { theme } = useThemeStore();
 	const createCommentMutation = useCommentPostMutation();
 	const deleteCommentMutation = useDeleteCommentPostMutation();
 	const createCommentProfileMutation = useCommentPostProfileMutation();

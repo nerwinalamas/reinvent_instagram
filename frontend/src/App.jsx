@@ -21,8 +21,8 @@ import UploadProfilePic from "./pages/UploadProfilePic";
 import Call from "./pages/Call";
 import SavedPost from "./pages/SavedPost";
 import SearchResult from "./pages/SearchResult";
-import { useSelector } from "react-redux";
 import useAuthStore from "./store/useAuth";
+import useThemeStore from "./store/useTheme";
 
 const ProtectedOutlet = () => {
 	const { isAuthenticated } = useAuthStore();
@@ -44,7 +44,7 @@ const AppLayout = () => {
 };
 
 const App = () => {
-	const theme = useSelector((state) => state.themeReducer.theme)
+	const { theme } = useThemeStore();
 
 	return (
 		<div className={`w-screen h-auto font-poppins  xl:w-auto ${theme === "dark" ? "bg-customBlack text-customWhite" : "bg-customWhite text-customBlack" }`}>

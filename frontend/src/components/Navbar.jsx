@@ -1,19 +1,20 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setSearchResults } from "../_actions/searchAction";
 import { useSearchUserMutation } from "../mutation/user";
 import { Bell, Menu, MessageCircleMore, Plus, Search } from "lucide-react";
 import CreatePost from "./CreatePost";
 import More from "./More";
 import useAuthStore from "../store/useAuth";
+import useThemeStore from "../store/useTheme";
 
 const Navbar = () => {
 	const [isOpen, setIsOpen] = useState(false);
 	const [isSearching, setIsSearching] = useState("");
 
-	const theme = useSelector((state) => state.themeReducer.theme);
 	const { token, logout, user } = useAuthStore();
+	const { theme } = useThemeStore();
 
 	const searchUserMutation = useSearchUserMutation();
 	const navigate = useNavigate();

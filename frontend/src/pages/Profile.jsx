@@ -18,6 +18,7 @@ import {
 	useUnsavePostProfileMutation,
 } from "../mutation/post";
 import useAuthStore from "../store/useAuth";
+import useThemeStore from "../store/useTheme";
 
 const Profile = () => {
 	const { id } = useParams();
@@ -28,8 +29,8 @@ const Profile = () => {
 		(state) => state.otherUserReducer.clickedOtherPost
 	);
 
-	const theme = useSelector((state) => state.themeReducer.theme);
 	const { token, user: currentUser } = useAuthStore();
+	const { theme } = useThemeStore();
 	const dispatch = useDispatch();
 
 	const likePostMutation = useLikePostProfileMutation();

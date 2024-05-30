@@ -9,18 +9,19 @@ import MessageSection from "../components/MessageSection";
 import ChatPlaceholder from "../components/ChatPlaceholder";
 import ChatHeads from "../components/ChatHeads";
 import useAuthStore from "../store/useAuth";
+import useThemeStore from "../store/useTheme";
 
 const Messages = () => {
 	const { socket, setReceivingCall, setCaller, setCallerSignal, setName } = useSocket();
 	const selectedChat = useSelector((state) => state.convoReducer.selectedChat);
-	const theme = useSelector((state) => state.themeReducer.theme);
 	const { user } = useAuthStore();
+	const { theme } = useThemeStore();
 
 	const dispatch = useDispatch();
 
 	useEffect(() => {
 		if (socket) {
-			socket.emit("userConnected", user._id);
+			socket.emit("userConnected", user && user._id);
 
 			socket.on("callUser", (data) => {
 				setReceivingCall(true);
@@ -33,7 +34,7 @@ const Messages = () => {
 				socket.off("callUser");
 			};
 		}
-	}, [socket, user._id]);
+	}, [socket, user && user._id]);
 
 	useEffect(() => {
 		return () => {

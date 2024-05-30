@@ -1,10 +1,8 @@
-import React from "react";
-import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import useThemeStore from "../store/useTheme";
 
 const LikeModal = ({ post, user }) => {
-    const theme = useSelector((state) => state.themeReducer.theme);
-	const otherUser = useSelector((state) => state.otherUserReducer.otherUser)
+	const { theme } = useThemeStore();
 	
 	return (
 		<dialog id={`like_modal-${post._id}`} className="modal">

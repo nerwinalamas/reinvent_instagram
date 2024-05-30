@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
 import { validatePost } from "../helpers/formValidation";
 import {
 	useCreatePostMutation,
@@ -8,6 +7,7 @@ import {
 import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
 import useAuthStore from "../store/useAuth";
+import useThemeStore from "../store/useTheme";
 
 const CreatePost = () => {
 	const location = useLocation();
@@ -18,8 +18,8 @@ const CreatePost = () => {
 	const [postContentError, setPostContentError] = useState("");
 	const [postPictureError, setPostPictureError] = useState("");
 
-	const theme = useSelector((state) => state.themeReducer.theme);
 	const { token } = useAuthStore();
+	const { theme } = useThemeStore();
 	const createPostMutation = useCreatePostMutation();
 	const createPostProfileMutation = useCreatePostProfileMutation();
 

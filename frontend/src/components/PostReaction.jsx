@@ -1,7 +1,7 @@
 import React from "react";
 import { Bookmark, MessageCircle, Redo2, ThumbsUp } from "lucide-react";
-import { useSelector } from "react-redux";
 import LikeModal from "./LikeModal";
+import useThemeStore from "../store/useTheme";
 
 const PostReaction = ({
 	post,
@@ -10,7 +10,7 @@ const PostReaction = ({
 	handleLike,
 	handleSavePost,
 }) => {
-	const theme = useSelector((state) => state.themeReducer.theme);
+	const { theme } = useThemeStore();
 
 	return (
 		<div className="flex flex-col gap-3 mt-2">

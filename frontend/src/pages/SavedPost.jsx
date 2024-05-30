@@ -1,14 +1,14 @@
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
 import { Bookmark } from "lucide-react";
 import moment from "moment";
 import { useSavePostMutation, useUnsavePostMutation } from "../mutation/post";
 import { useQuery } from "@tanstack/react-query";
 import useAuthStore from "../store/useAuth";
+import useThemeStore from "../store/useTheme";
 
 const SavedPost = () => {
-	const theme = useSelector((state) => state.themeReducer.theme);
 	const { token, user } = useAuthStore();
+	const { theme } = useThemeStore();
 	const savePostMutation = useSavePostMutation();
 	const unsavePostMutation = useUnsavePostMutation();
 

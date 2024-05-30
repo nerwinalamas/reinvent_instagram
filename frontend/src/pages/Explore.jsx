@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { getExplorePosts } from "../api/post";
 import { useQuery } from "@tanstack/react-query";
 import moment from "moment";
 import useAuthStore from "../store/useAuth";
+import useThemeStore from "../store/useTheme";
 
 const Explore = () => {
 	const [postData, setPostData] = useState({});
-	const theme = useSelector((state) => state.themeReducer.theme);
 	const { token } = useAuthStore();
+	const { theme } = useThemeStore();
 
 	const { data, isLoading, isError, error } = useQuery({
 		queryKey: ["explorePosts", token],
@@ -19,10 +19,10 @@ const Explore = () => {
 
 	return (
 		<ResponsiveMasonry
-			columnsCountBreakPoints={{ 350: 1, 750: 2, 900: 3 }}
+			columnscountBreakPoints={{ 350: 1, 750: 2, 900: 3 }}
 			className="h-auto overflow-y-auto p-5 xl:px-40 xl:max-w-screen-2xl xl:mx-auto"
 		>
-			<Masonry columnsCount={3} gutter="10px">
+			<Masonry columnscount={3} gutter="10px">
 				{isLoading ? (
 					<p>Loading...</p>
 				) : isError ? (
@@ -64,7 +64,8 @@ const Explore = () => {
 									<Link
 										to={`/profile/${postData.postedBy._id}`}
 									>
-										{postData.postedBy.profilePicture ? (
+										{postData.postedBy
+											.profilePicture ? (
 											<div className="w-11 h-11 rounded-full flex flex-col bg-customBlack items-center justify-center">
 												<img
 													src={
@@ -92,7 +93,10 @@ const Explore = () => {
 											to={`/profile/${postData.postedBy._id}`}
 										>
 											<p className="capitalize hover:underline">
-												{postData.postedBy.firstName}{" "}
+												{
+													postData.postedBy
+														.firstName
+												}{" "}
 												{postData.postedBy.lastName}
 											</p>
 										</Link>

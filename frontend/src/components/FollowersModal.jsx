@@ -1,10 +1,10 @@
-import React from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import useThemeStore from "../store/useTheme";
 
 const FollowersModal = () => {
-    const theme = useSelector((state) => state.themeReducer.theme);
-	const otherUser = useSelector((state) => state.otherUserReducer.otherUser)
+	const otherUser = useSelector((state) => state.otherUserReducer.otherUser);
+	const { theme } = useThemeStore();
 
 	return (
 		<dialog id="followers_modal" className="modal">

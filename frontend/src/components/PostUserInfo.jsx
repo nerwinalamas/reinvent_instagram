@@ -1,6 +1,5 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
 import moment from "moment";
 import { Ellipsis } from "lucide-react";
 import {
@@ -9,11 +8,12 @@ import {
 } from "../mutation/post";
 import toast from "react-hot-toast";
 import useAuthStore from "../store/useAuth";
+import useThemeStore from "../store/useTheme";
 
 const PostUserInfo = ({ post, user }) => {
 	const location = useLocation();
-	const theme = useSelector((state) => state.themeReducer.theme);
 	const { token, user: currentUser } = useAuthStore();
+	const { theme } = useThemeStore();
 	const deletePostMutation = useDeletePostMutation();
 	const deletePostProfileMutation = useDeletePostProfileMutation();
 
