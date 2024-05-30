@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { validatePost } from "../helpers/formValidation";
-import { API } from "../constants/endpoints";
-
-import axios from "axios";
 import toast from "react-hot-toast";
-import { useUpdatePostMutation } from "../mutation/post";
+import { useGetPostMutation, useUpdatePostMutation } from "../mutation/post";
 import useAuthStore from "../store/useAuth";
 
 const UpdatePost = () => {
@@ -13,34 +10,20 @@ const UpdatePost = () => {
 	const [data, setData] = useState({ postContent: "", postPicture: null });
 	const { token } = useAuthStore();
 	const updatePostMutation = useUpdatePostMutation();
+	const getPostMutation = useGetPostMutation();
 
 	const [postContentError, setPostContentError] = useState("");
 	const [postPictureError, setPostPictureError] = useState("");
 
 	const navigate = useNavigate();
 
-	// TODO
-	const getPost = async () => {
-		try {
-			const response = await axios.get(
-				API.READ_POST(id),
-				{
-					headers: {
-						Authorization: `Bearer ${localStorage.getItem(
-							"token"
-						)}`,
-					},
-				}
-			);
-			setData(response.data.data);
-		} catch (error) {
-			console.error("Error fetching post:", error);
-		}
-	};
-
 	useEffect(() => {
-		getPost();
-	}, [id]);
+		getPostMutation.mutate({ postId: id, token }, {
+			onSuccess: (data) => {
+				setData(data)
+			}
+		})
+	}, [id])
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
