@@ -3,17 +3,19 @@ import { useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Bookmark, Compass, Home, LogOut, Moon, Sun } from "lucide-react";
 import { setTheme } from "../_actions/themeAction";
+import useAuthStore from "../store/useAuth";
 
 const More = () => {
 	const user = useSelector((state) => state.userReducer.user);
 	const [isOpen, setIsOpen] = useState(false);
 	const theme = useSelector((state) => state.themeReducer.theme);
+	const { logout } = useAuthStore();
 
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
 	const handleLogout = () => {
-		localStorage.removeItem("token");
+		logout();
 		navigate("/login");
 	};
 

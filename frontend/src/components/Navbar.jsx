@@ -14,14 +14,14 @@ const Navbar = () => {
 
 	const user = useSelector((state) => state.userReducer.user);
 	const theme = useSelector((state) => state.themeReducer.theme);
-	const { token } = useAuthStore();
+	const { token, logout } = useAuthStore();
 
 	const searchUserMutation = useSearchUserMutation();
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
 	const handleLogout = () => {
-		localStorage.removeItem("token");
+		logout();
 		navigate("/login");
 	};
 
