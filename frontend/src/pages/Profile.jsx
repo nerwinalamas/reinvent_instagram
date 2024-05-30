@@ -1,9 +1,7 @@
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { setClickedOtherPost, setOtherUser } from "../_actions/otherUserAction";
-import { API } from "../constants/endpoints";
-import axios from "axios";
+import { setClickedOtherPost } from "../_actions/otherUserAction";
 
 import PostModal from "../components/PostModal";
 import PostReaction from "../components/PostReaction";
@@ -19,17 +17,21 @@ import {
 } from "../mutation/post";
 import useAuthStore from "../store/useAuth";
 import useThemeStore from "../store/useTheme";
+import {
+	useCurrentUserMutation,
+	useOtherUserProfileMutation,
+} from "../mutation/user";
+import useUserProfileStore from "../store/useUserProfileStore";
 
 const Profile = () => {
 	const { id } = useParams();
 
-	// otherUser
-	const user = useSelector((state) => state.otherUserReducer.otherUser);
 	const clickedOtherPost = useSelector(
 		(state) => state.otherUserReducer.clickedOtherPost
 	);
 
-	const { token, user: currentUser } = useAuthStore();
+	const { token, user: currentUser, setUser } = useAuthStore();
+	const { otherUser, setOtherUser } = useUserProfileStore();
 	const { theme } = useThemeStore();
 	const dispatch = useDispatch();
 
@@ -37,29 +39,47 @@ const Profile = () => {
 	const unlikePostMutation = useUnLikePostProfileMutation();
 	const savePostMutation = useSavePostProfileMutation();
 	const unsavePostMutation = useUnsavePostProfileMutation();
+	const otherUserMutation = useOtherUserProfileMutation();
+	const currentUserMutation = useCurrentUserMutation();
 
-	const { data, isLoading, isError, error } = useQuery({
+	const {
+		data: posts,
+		isLoading,
+		isError,
+		error,
+	} = useQuery({
 		queryKey: ["userPosts", id, token],
 		queryFn: () => getUserPosts(id, token),
 	});
 
-	// TODO
-	const getUser = async (userId) => {
-		try {
-			const response = await axios.get(API.GET_USER(userId), {
-				headers: {
-					Authorization: `Bearer ${localStorage.getItem("token")}`,
-				},
-			});
-			dispatch(setOtherUser(response.data.data));
-		} catch (error) {
-			console.log("Get User Profile Error: ", error);
+	useEffect(() => {
+		if (id && token) {
+			otherUserMutation.mutate(
+				{ userId: id, token },
+				{
+					onSuccess: (data) => {
+						setOtherUser(data);
+					},
+					onError: (error) => {
+						console.error("Error fetching other user:", error);
+					},
+				}
+			);
 		}
-	};
+	}, [id, token, setOtherUser]);
 
 	useEffect(() => {
-		getUser(id);
-	}, [id, user]);
+		if (token) {
+			currentUserMutation.mutate(token, {
+				onSuccess: (data) => {
+					setUser(data);
+				},
+				onError: (error) => {
+					console.error("Error fetching current user:", error);
+				},
+			});
+		}
+	}, [token, setUser]);
 
 	const handleClick = (post) => {
 		dispatch(setClickedOtherPost(post));
@@ -100,8 +120,8 @@ const Profile = () => {
 					<p>Loading...</p>
 				) : isError ? (
 					<p>Error: {error}</p>
-				) : data.length > 0 ? (
-					data.map((post) => (
+				) : posts.length > 0 ? (
+					posts.map((post) => (
 						<div
 							key={post._id}
 							className={`w-80 p-3  rounded-md flex flex-col gap-2 md:w-96 md:gap-5 lg:p-5 xl:w-[600px] xl:gap-1 ${
@@ -111,7 +131,7 @@ const Profile = () => {
 							}`}
 						>
 							{/* USER INFO */}
-							<PostUserInfo post={post} user={user} />
+							<PostUserInfo post={post} user={otherUser} />
 							{/* PICTURE SECTION */}
 							<img
 								src={post.postPicture}
