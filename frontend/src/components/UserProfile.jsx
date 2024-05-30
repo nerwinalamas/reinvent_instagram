@@ -11,9 +11,10 @@ import { useQuery } from "@tanstack/react-query";
 import { getUserPosts } from "../api/post";
 import useAuthStore from "../store/useAuth";
 import useThemeStore from "../store/useTheme";
+import useUserProfileStore from "../store/useUserProfileStore";
 
 const UserProfile = ({ userId }) => {
-	const otherUser = useSelector((state) => state.otherUserReducer.otherUser)
+	const { otherUser } = useUserProfileStore();
 	const { token, user: currentUser } = useAuthStore();
 	const { theme } = useThemeStore();
 
@@ -56,12 +57,12 @@ const UserProfile = ({ userId }) => {
 		>
 			<div
 				className={`w-32 h-32 rounded-full flex  items-center justify-center relative ${
-					otherUser.profilePicture
+					otherUser && otherUser.profilePicture
 						? "bg-customBlack"
 						: "bg-customWhite text-customBlack "
 				}`}
 			>
-				{otherUser.profilePicture ? (
+				{otherUser && otherUser.profilePicture ? (
 					<img
 						src={otherUser.profilePicture}
 						alt=""
@@ -69,12 +70,12 @@ const UserProfile = ({ userId }) => {
 					/>
 				) : (
 					<p className="capitalize font-semibold text-5xl">
-						{otherUser.firstName && otherUser.firstName.charAt(0)}
+						{otherUser && otherUser.firstName && otherUser.firstName.charAt(0)}
 					</p>
 				)}
 			</div>
 
-			{otherUser._id && currentUser._id && otherUser._id === currentUser._id && (
+			{otherUser && otherUser._id && currentUser._id && otherUser._id === currentUser._id && (
 				<Link
 					to={`/edit/profile/${currentUser._id}`}
 					className="absolute right-3 top-3 text-blue-500 hover:underline cursor-pointer xl:right-5 xl:top-5"
@@ -83,7 +84,7 @@ const UserProfile = ({ userId }) => {
 				</Link>
 			)}
 
-			{otherUser._id &&
+			{otherUser && otherUser._id &&
 				currentUser._id &&
 				otherUser._id !== currentUser._id &&
 				!otherUser.followers.find(follower => follower._id === currentUser._id) && (
@@ -95,7 +96,7 @@ const UserProfile = ({ userId }) => {
 					</p>
 			)}
 
-			{otherUser._id &&
+			{otherUser && otherUser._id &&
 				currentUser._id &&
 				otherUser._id !== currentUser._id &&
 				otherUser.followers.find(follower => follower._id === currentUser._id) && (
@@ -109,9 +110,9 @@ const UserProfile = ({ userId }) => {
 
 			<div className="flex flex-col gap-1 text-center">
 				<p className="text-lg capitalize font-medium">
-					{otherUser.firstName} {otherUser.lastName}
+					{otherUser && otherUser.firstName} {otherUser && otherUser.lastName}
 				</p>
-				<p className="text-xs">{otherUser.userName}</p>
+				<p className="text-xs">{otherUser && otherUser.userName}</p>
 			</div>
 			<div className="flex gap-5 text-sm mt-5">
 				<p>
@@ -124,7 +125,7 @@ const UserProfile = ({ userId }) => {
 						document.getElementById("followers_modal").showModal()
 					}
 				>
-					{otherUser.followers && otherUser.followers.length} followers
+					{otherUser && otherUser.followers && otherUser.followers.length} followers
 				</p>
 				<p
 					className="cursor-pointer hover:underline"
@@ -132,7 +133,7 @@ const UserProfile = ({ userId }) => {
 						document.getElementById("following_modal").showModal()
 					}
 				>
-					{otherUser.following && otherUser.following.length} following
+					{otherUser && otherUser.following && otherUser.following.length} following
 				</p>
 			</div>
 			<FollowersModal />
