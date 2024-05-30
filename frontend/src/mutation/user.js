@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { loggedInUser, searchUser, updateProfilePhoto } from "../api/user";
+import { getUser, loggedInUser, searchUser, updateProfilePhoto } from "../api/user";
 
 export const useUpdateProfilePhotoMutation = () => {
 	const queryClient = useQueryClient();
@@ -24,6 +24,15 @@ export const useCurrentUserMutation = () => {
 
 	return useMutation({
 		mutationFn: loggedInUser,
+		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["user"] }),
+	});
+};
+
+export const useOtherUserProfileMutation = () => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: ({ userId, token }) => getUser(userId, token),
 		onSuccess: () => queryClient.invalidateQueries({ queryKey: ["user"] }),
 	});
 };
