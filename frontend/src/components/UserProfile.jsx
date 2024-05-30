@@ -9,19 +9,22 @@ import FollowingModal from "./FollowingModal";
 import { followOtherUser, unfollowOtherUser } from "../_actions/otherUserAction";
 import { useQuery } from "@tanstack/react-query";
 import { getUserPosts } from "../api/post";
+import useAuthStore from "../store/useAuth";
 
 const UserProfile = ({ userId }) => {
 	const currentUser = useSelector((state) => state.userReducer.user);
 	const otherUser = useSelector((state) => state.otherUserReducer.otherUser)
 	const theme = useSelector((state) => state.themeReducer.theme);
+	const { token } = useAuthStore();
 
 	const { data } = useQuery({
-		queryKey: ["userPosts", userId],
-		queryFn: () => getUserPosts(userId),
+		queryKey: ["userPosts", userId, token],
+		queryFn: () => getUserPosts(userId, token),
 	});
 
 	const dispatch = useDispatch();
 
+	// TODO
 	const handleFollow = async (id) => {
 		try {
 			const response = await axios.post(

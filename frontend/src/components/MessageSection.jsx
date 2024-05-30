@@ -6,17 +6,19 @@ import Peer from "simple-peer";
 import moment from "moment";
 import { useQuery } from "@tanstack/react-query";
 import { getConversation } from "../api/message";
+import useAuthStore from "../store/useAuth";
 
 const MessageSection = () => {
 	const user = useSelector((state) => state.userReducer.user);
+	const { token } = useAuthStore()
 	const selectedChat = useSelector(
 		(state) => state.convoReducer.selectedChat
 	);
 
 	const userId = selectedChat?._id;
 	const { data, isLoading, isError, error, refetch } = useQuery({
-		queryKey: ["conversation", userId],
-		queryFn: () => getConversation(userId),
+		queryKey: ["conversation", userId, token],
+		queryFn: () => getConversation(userId, token),
 		enabled: !!userId,
 	});
 

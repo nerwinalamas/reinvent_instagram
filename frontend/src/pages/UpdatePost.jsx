@@ -6,10 +6,12 @@ import { API } from "../constants/endpoints";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useUpdatePostMutation } from "../mutation/post";
+import useAuthStore from "../store/useAuth";
 
 const UpdatePost = () => {
 	const { id } = useParams();
 	const [data, setData] = useState({ postContent: "", postPicture: null });
+	const { token } = useAuthStore();
 	const updatePostMutation = useUpdatePostMutation();
 
 	const [postContentError, setPostContentError] = useState("");
@@ -17,6 +19,7 @@ const UpdatePost = () => {
 
 	const navigate = useNavigate();
 
+	// TODO
 	const getPost = async () => {
 		try {
 			const response = await axios.get(
@@ -59,7 +62,7 @@ const UpdatePost = () => {
 
 		try {
 			updatePostMutation.mutate(
-				{ postId: id, postContent, postPicture },
+				{ postId: id, postContent, postPicture, token },
 				{
 					onSuccess: () => {
 						toast.success("Post Updated Successfully", { id: toastId });

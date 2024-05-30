@@ -1,9 +1,13 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { validatePost } from "../helpers/formValidation";
-import { useCreatePostMutation, useCreatePostProfileMutation } from "../mutation/post";
+import {
+	useCreatePostMutation,
+	useCreatePostProfileMutation,
+} from "../mutation/post";
 import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
+import useAuthStore from "../store/useAuth";
 
 const CreatePost = () => {
 	const location = useLocation();
@@ -15,6 +19,7 @@ const CreatePost = () => {
 	const [postPictureError, setPostPictureError] = useState("");
 
 	const theme = useSelector((state) => state.themeReducer.theme);
+	const { token } = useAuthStore();
 	const createPostMutation = useCreatePostMutation();
 	const createPostProfileMutation = useCreatePostProfileMutation();
 
@@ -39,11 +44,13 @@ const CreatePost = () => {
 		try {
 			if (location.pathname === "/") {
 				createPostMutation.mutate(
-					{ postContent, postPicture },
+					{ postContent, postPicture, token },
 					{
 						onSuccess: () => {
 							setPostContent("");
-							toast.success("Create Post Successfully", { id: toastId });
+							toast.success("Create Post Successfully", {
+								id: toastId,
+							});
 							document.getElementById("postPicture").value = null;
 							document.getElementById("my_modal_3").close();
 						},
@@ -59,7 +66,9 @@ const CreatePost = () => {
 					{
 						onSuccess: () => {
 							setPostContent("");
-							toast.success("Create Post Successfully", { id: toastId });
+							toast.success("Create Post Successfully", {
+								id: toastId,
+							});
 							document.getElementById("postPicture").value = null;
 							document.getElementById("my_modal_3").close();
 						},
@@ -70,7 +79,6 @@ const CreatePost = () => {
 					}
 				);
 			}
-			
 		} catch (error) {
 			toast.error("An unexpected error occurred", { id: toastId });
 			console.log("Create Post Error: ", error);

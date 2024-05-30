@@ -17,6 +17,7 @@ import {
 	useUnLikePostProfileMutation,
 	useUnsavePostProfileMutation,
 } from "../mutation/post";
+import useAuthStore from "../store/useAuth";
 
 const Profile = () => {
 	const { id } = useParams();
@@ -29,6 +30,7 @@ const Profile = () => {
 
 	const currentUser = useSelector((state) => state.userReducer.user);
 	const theme = useSelector((state) => state.themeReducer.theme);
+	const { token } = useAuthStore();
 	const dispatch = useDispatch();
 
 	const likePostMutation = useLikePostProfileMutation();
@@ -37,10 +39,11 @@ const Profile = () => {
 	const unsavePostMutation = useUnsavePostProfileMutation();
 
 	const { data, isLoading, isError, error } = useQuery({
-		queryKey: ["userPosts", id],
-		queryFn: () => getUserPosts(id),
+		queryKey: ["userPosts", id, token],
+		queryFn: () => getUserPosts(id, token),
 	});
 
+	// TODO
 	const getUser = async (userId) => {
 		try {
 			const response = await axios.get(API.GET_USER(userId), {
@@ -66,9 +69,9 @@ const Profile = () => {
 	const handleLike = (postId, isLiked) => {
 		try {
 			if (isLiked) {
-				unlikePostMutation.mutate(postId);
+				unlikePostMutation.mutate(postId, token);
 			} else {
-				likePostMutation.mutate(postId);
+				likePostMutation.mutate(postId, token);
 			}
 		} catch (error) {
 			console.log("Like/Unlike Post Error: ", error);
@@ -78,9 +81,9 @@ const Profile = () => {
 	const handleSavePost = (postId, isSaved) => {
 		try {
 			if (isSaved) {
-				unsavePostMutation.mutate(postId);
+				unsavePostMutation.mutate(postId, token);
 			} else {
-				savePostMutation.mutate(postId);
+				savePostMutation.mutate(postId, token);
 			}
 		} catch (error) {
 			console.log("Save/Unsave Post Error: ", error);

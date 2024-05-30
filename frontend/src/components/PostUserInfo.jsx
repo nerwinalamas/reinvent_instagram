@@ -8,11 +8,13 @@ import {
 	useDeletePostProfileMutation,
 } from "../mutation/post";
 import toast from "react-hot-toast";
+import useAuthStore from "../store/useAuth";
 
 const PostUserInfo = ({ post, user }) => {
 	const location = useLocation();
 	const theme = useSelector((state) => state.themeReducer.theme);
 	const currentUser = useSelector((state) => state.userReducer.user);
+	const { token } = useAuthStore();
 	const deletePostMutation = useDeletePostMutation();
 	const deletePostProfileMutation = useDeletePostProfileMutation();
 
@@ -20,13 +22,13 @@ const PostUserInfo = ({ post, user }) => {
 		const toastId = toast.loading("Deleting Post...");
 		try {
 			if (location.pathname === "/") {
-				deletePostMutation.mutate(postId, {
+				deletePostMutation.mutate({ postId, token }, {
 					onSuccess: () => {
 						toast.success("Deleting Post Successfully!", { id: toastId });
 					},
 				});
 			} else {
-				deletePostProfileMutation.mutate(postId, {
+				deletePostProfileMutation.mutate({ postId, token }, {
 					onSuccess: () => {
 						toast.success("Deleting Post Successfully!", { id: toastId });
 					},

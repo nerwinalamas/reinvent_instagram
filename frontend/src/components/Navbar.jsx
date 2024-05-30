@@ -6,6 +6,7 @@ import { useSearchUserMutation } from "../mutation/user";
 import { Bell, Menu, MessageCircleMore, Plus, Search } from "lucide-react";
 import CreatePost from "./CreatePost";
 import More from "./More";
+import useAuthStore from "../store/useAuth";
 
 const Navbar = () => {
 	const [isOpen, setIsOpen] = useState(false);
@@ -13,7 +14,8 @@ const Navbar = () => {
 
 	const user = useSelector((state) => state.userReducer.user);
 	const theme = useSelector((state) => state.themeReducer.theme);
-	
+	const { token } = useAuthStore();
+
 	const searchUserMutation = useSearchUserMutation();
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
@@ -33,13 +35,16 @@ const Navbar = () => {
 		if (!isSearching) return;
 
 		try {
-			searchUserMutation.mutate(isSearching, {
-				onSuccess: (data) => {
-					dispatch(setSearchResults(data));
-					navigate(`/search/${isSearching}`);
-					setIsSearching("");
-				},
-			});
+			searchUserMutation.mutate(
+				{ isSearching, token },
+				{
+					onSuccess: (data) => {
+						dispatch(setSearchResults(data));
+						navigate(`/search/${isSearching}`);
+						setIsSearching("");
+					},
+				}
+			);
 		} catch (error) {
 			console.log("Search Error: ", error);
 		}

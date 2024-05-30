@@ -10,6 +10,7 @@ import {
 	useDeleteCommentPostProfileMutation,
 } from "../mutation/post";
 import toast from "react-hot-toast";
+import useAuthStore from "../store/useAuth";
 
 const PostModal = ({
 	user,
@@ -21,6 +22,7 @@ const PostModal = ({
 	const location = useLocation();
 	const [newComment, setNewComment] = useState("");
 	const theme = useSelector((state) => state.themeReducer.theme);
+	const { token } = useAuthStore();
 	const createCommentMutation = useCommentPostMutation();
 	const deleteCommentMutation = useDeleteCommentPostMutation();
 	const createCommentProfileMutation = useCommentPostProfileMutation();
@@ -34,11 +36,13 @@ const PostModal = ({
 				await createCommentMutation.mutateAsync({
 					postId,
 					comment: newComment,
+					token
 				});
 			} else {
 				await createCommentProfileMutation.mutateAsync({
 					postId,
 					comment: newComment,
+					token
 				});
 			}
 
@@ -52,9 +56,9 @@ const PostModal = ({
 	const handleDeleteComment = async (postId, commentId) => {
 		try {
 			if (location.pathname === "/") {
-				deleteCommentMutation.mutate({ postId, commentId });
+				deleteCommentMutation.mutate({ postId, commentId, token });
 			} else {
-				deleteCommentProfileMutation.mutate({ postId, commentId });
+				deleteCommentProfileMutation.mutate({ postId, commentId, token });
 			}
 
 			toast.success("Deleting Comment Successfully!");

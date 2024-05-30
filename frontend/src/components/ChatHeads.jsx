@@ -2,14 +2,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { setSelectedChat } from "../_actions/convoAction";
 import { getChatmates } from "../api/message";
 import { useQuery } from "@tanstack/react-query";
+import useAuthStore from "../store/useAuth";
 
 const ChatHeads = () => {
 	const theme = useSelector((state) => state.themeReducer.theme);
+	const { token } = useAuthStore();
 	const dispatch = useDispatch();
 
 	const { data, isLoading, isError, error } = useQuery({
-		queryKey: ["conversation"],
-		queryFn: getChatmates,
+		queryKey: ["conversation", token],
+		queryFn: () => getChatmates(token),
 	});
 
 	return (

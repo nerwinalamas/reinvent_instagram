@@ -6,6 +6,7 @@ import CallUser from "../components/CallUser";
 import * as process from "process";
 import { useQuery } from "@tanstack/react-query";
 import { getUser } from "../api/user";
+import useAuthStore from "../store/useAuth";
 
 window.global = window;
 window.process = process;
@@ -16,10 +17,11 @@ const Call = () => {
 
 	const [toggleVideo, setToggleVideo] = useState(false);
 	const [toggleAudio, setToggleAudio] = useState(true);
+	const { token } = useAuthStore()
 
 	const { data } = useQuery({
-		queryKey: ["user", id],
-		queryFn: () => getUser(id),
+		queryKey: ["user", id, token],
+		queryFn: () => getUser(id, token),
 	}); 
 
 	const {

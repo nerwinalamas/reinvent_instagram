@@ -3,12 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { useUpdateProfilePhotoMutation } from "../mutation/user";
+import useAuthStore from "../store/useAuth";
 
 const UploadProfilePic = () => {
 	const [profilePicture, setProfilePicture] = useState(null);
 	const [profilePictureError, setProfilePictureError] = useState("");
 
 	const currentUser = useSelector((state) => state.userReducer.user);
+	const { token } = useAuthStore();
 	const navigate = useNavigate();
 
 	const updateProfilePhotoMutation = useUpdateProfilePhotoMutation();
@@ -20,10 +22,12 @@ const UploadProfilePic = () => {
 		const toastId = toast.loading("Uploading Profile Photo...");
 		try {
 			updateProfilePhotoMutation.mutate(
-				{ userId, profilePicture },
+				{ userId, profilePicture, token },
 				{
 					onSuccess: () => {
-						toast.success("Profile Photo Updated Succesfully!", { id: toastId });
+						toast.success("Profile Photo Updated Succesfully!", {
+							id: toastId,
+						});
 						navigate("/");
 					},
 				}

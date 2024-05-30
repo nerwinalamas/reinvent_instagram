@@ -3,12 +3,14 @@ import { useSelector } from "react-redux";
 import { useSocket } from "../context/SocketContext";
 import { useSendMessageMutation } from "../mutation/message";
 import { Send } from "lucide-react";
+import useAuthStore from "../store/useAuth";
 
 const MessageForm = () => {
 	const [message, setMessage] = useState("");
 	const theme = useSelector((state) => state.themeReducer.theme);
     const selectedChat = useSelector((state) => state.convoReducer.selectedChat);
     const user = useSelector((state) => state.userReducer.user);
+	const { token } = useAuthStore()
 	const sendMessageMutation = useSendMessageMutation();
 	const { socket } = useSocket();
 
@@ -16,7 +18,7 @@ const MessageForm = () => {
 		e.preventDefault();
 
 		try {
-			sendMessageMutation.mutate({ userId: id, message }, {
+			sendMessageMutation.mutate({ userId: id, message, token }, {
 				onSuccess: () => {
 					socket.emit("message", { message, userId: user._id });
 					setMessage("");

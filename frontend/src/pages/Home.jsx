@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../_actions/userAction";
 import { setClickedPost } from "../_actions/postsAction";
@@ -18,11 +17,13 @@ import {
 	useUnLikePostMutation,
 	useUnsavePostMutation,
 } from "../mutation/post";
+import useAuthStore from "../store/useAuth";
 
 const Home = () => {
 	const user = useSelector((state) => state.userReducer.user);
 	const clickedPost = useSelector((state) => state.postReducer.clickedPost);
 	const theme = useSelector((state) => state.themeReducer.theme);
+	const { token } = useAuthStore();
 
 	const likePostMutation = useLikePostMutation();
 	const unlikePostMutation = useUnLikePostMutation();
@@ -30,18 +31,11 @@ const Home = () => {
 	const unsavePostMutation = useUnsavePostMutation();
 
 	const { data, isLoading, isError, error } = useQuery({
-		queryKey: ["posts"],
-		queryFn: getPosts,
+		queryKey: ["posts", token],
+		queryFn: () => getPosts(token),
 	});
 
-	const navigate = useNavigate();
 	const dispatch = useDispatch();
-
-	useEffect(() => {
-		if (!localStorage.getItem("token")) {
-			navigate("/login");
-		}
-	}, []);
 
 	const fetchUser = async () => {
 		try {
@@ -68,9 +62,9 @@ const Home = () => {
 	const handleLike = (postId, isLiked) => {
 		try {
 			if (isLiked) {
-				unlikePostMutation.mutate(postId);
+				unlikePostMutation.mutate(postId, token);
 			} else {
-				likePostMutation.mutate(postId);
+				likePostMutation.mutate(postId, token);
 			}
 		} catch (error) {
 			console.log("Like/Unlike Post Error: ", error);
@@ -80,9 +74,9 @@ const Home = () => {
 	const handleSavePost = (postId, isSaved) => {
 		try {
 			if (isSaved) {
-				unsavePostMutation.mutate(postId);
+				unsavePostMutation.mutate(postId, token);
 			} else {
-				savePostMutation.mutate(postId);
+				savePostMutation.mutate(postId, token);
 			}
 		} catch (error) {
 			console.log("Save/Unsave Post Error: ", error);
