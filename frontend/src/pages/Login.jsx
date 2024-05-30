@@ -1,46 +1,50 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { validateLoginForm } from "../helpers/formValidation"
-import { API } from "../constants/endpoints";
-
-import axios from "axios";
+import { validateLoginForm } from "../helpers/formValidation";
 import toast from "react-hot-toast";
+import { useLoginUserMutation } from "../mutation/auth";
+import useAuthStore from "../store/useAuth";
 
 const Login = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-
 	const [emailError, setEmailError] = useState("");
 	const [passwordError, setPasswordError] = useState("");
 
+	const loginUserMutation = useLoginUserMutation();
+	const { login } = useAuthStore();
 	const navigate = useNavigate();
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 
-		if (!validateLoginForm(email, setEmailError, password, setPasswordError)) return;
+		if (
+			!validateLoginForm(email, setEmailError, password, setPasswordError)
+		)
+			return;
+
+		const toastId = toast.loading("Loading...");
 
 		try {
-			const response = await axios.post(API.LOGIN, {
-				email: email,
-				password: password,
-			});
-			if (response) {
-				toast.success(response.data.message);
-				localStorage.setItem("token", response.data.token);
-				navigate("/");
-			}
+			loginUserMutation.mutate(
+				{ email, password },
+				{
+					onSuccess: (data) => {
+						login(data.token);
+						toast.success(data.message, { id: toastId });
+						navigate("/");
+					},
+					onError: () => {
+						toast.error("An error occurred", { id: toastId });
+						console.log("Login Error: ", error);
+					},
+				}
+			);
 		} catch (error) {
-			toast.error(error.response.data.message);
+			toast.error(error.response.data.message, { id: toastId });
 			console.log("Login Error: ", error.response.data.message);
 		}
 	};
-
-	useEffect(() => {
-		if (localStorage.getItem("token")) {
-			navigate("/");
-		}
-	}, []);
 
 	return (
 		<main className="h-screen flex items-center justify-center">
