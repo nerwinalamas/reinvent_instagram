@@ -13,6 +13,26 @@ const useAuthStore = create((set) => ({
 		localStorage.removeItem("token");
 	},
 	setUser: (user) => set((state) => ({ ...state, user })),
+	toggleFollowing: (userId) =>
+		set((state) => {
+			if (state.user.following.some((user) => user._id === userId)) {
+				return {
+					user: {
+						...state.user,
+						following: state.user.following.filter(
+							(user) => user._id !== userId
+						),
+					},
+				};
+			} else {
+				return {
+					user: {
+						...state.user,
+						following: [...state.user.following, { _id: userId }],
+					},
+				};
+			}
+		}),
 }));
 
 export default useAuthStore;
