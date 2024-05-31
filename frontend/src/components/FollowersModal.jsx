@@ -1,10 +1,19 @@
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import useThemeStore from "../store/useTheme";
-import useUserProfileStore from "../store/useUserProfileStore";
+import { useQuery } from "@tanstack/react-query";
+import { getUser } from "../api/user";
+import useAuthStore from "../store/useAuth";
 
 const FollowersModal = () => {
-	const { otherUser } = useUserProfileStore();
+	const { id } = useParams();
+	const { token } = useAuthStore();
 	const { theme } = useThemeStore();
+
+	const { data, isLoading, isError, error } = useQuery({
+		queryKey: ["user", id, token],
+		queryFn: () => getUser(id, token),
+		enabled: !!id && !!token,
+	});
 
 	return (
 		<dialog id="followers_modal" className="modal">
@@ -15,8 +24,12 @@ const FollowersModal = () => {
 			>
 				<h2 className="text-center font-semibold text-xl">Followers</h2>
 				<div className="max-h-96 min-h-96 overflow-y-auto flex flex-col gap-3 items-center mt-3 xl:gap-0">
-					{otherUser && otherUser.followers && otherUser.followers.length > 0 ? (
-						otherUser.followers.map((user) => (
+					{isLoading ? (
+						<p>Loading...</p>
+					) : isError ? (
+						<p>Error: {error}</p>
+					) : data && data.followers.length > 0 ? (
+						data.followers.map((user) => (
 							<div
 								key={user._id}
 								className={`w-full flex items-center gap-5 rounded-lg py-3 px-5 xl:mb-3 ${
