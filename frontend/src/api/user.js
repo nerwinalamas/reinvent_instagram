@@ -64,3 +64,21 @@ export const loggedInUser = async (token) => {
 		console.log("Get Logged In User Error: ", error);
 	}
 };
+
+export const followToggle = async (userId, token) => {
+	try {
+		const response = await axios.post(
+			API.FOLLOW_TOGGLE(userId),
+			{},
+			{
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			}
+		);
+
+		return response.data;
+	} catch (error) {
+		console.log("Follow/Unfollow User Error: ", error);
+	}
+};
