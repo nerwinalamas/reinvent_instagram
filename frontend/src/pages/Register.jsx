@@ -41,30 +41,24 @@ const Register = () => {
 
 		const toastId = toast.loading("Loading...");
 
-		try {
-			registerUserMutation.mutate(
-				{
-					email,
-					firstName,
-					lastName,
-					userName,
-					password,
+		registerUserMutation.mutate(
+			{
+				email,
+				firstName,
+				lastName,
+				userName,
+				password,
+			},
+			{
+				onSuccess: (data) => {
+					toast.success(data.data.message, { id: toastId });
+					navigate("/login");
 				},
-				{
-					onSuccess: (data) => {
-						toast.success(data.message, { id: toastId });
-						navigate("/login");
-					},
-					onError: () => {
-						toast.error("An error occurred", { id: toastId });
-						console.log("Registration Error: ", error);
-					},
-				}
-			);
-		} catch (error) {
-			toast.error(error.response.data.message);
-			console.log("Registration Error: ", error.response.data.message);
-		}
+				onError: (error) => {
+					toast.error(error.response.data.message, { id: toastId });
+				},
+			}
+		);
 	};
 
 	return (
@@ -161,7 +155,8 @@ const Register = () => {
 				)}
 				<input
 					type="submit"
-					value="Submit"
+					value={registerUserMutation.isPending ? "Loading..." : "Submit"}
+					disabled={registerUserMutation.isPending}
 					className="p-2 border my-2 rounded-sm bg-customBlack text-customWhite cursor-pointer"
 				/>
 				<div className="w-full flex justify-center gap-2">
