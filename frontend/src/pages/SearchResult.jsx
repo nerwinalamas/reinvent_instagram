@@ -1,17 +1,15 @@
-import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import useThemeStore from "../store/useTheme";
+import useSearchStore from "../store/useSearch";
 
 const SearchResult = () => {
-	const searchResults = useSelector(
-		(state) => state.searchReducer.searchResults
-	);
+	const { search } = useSearchStore();
 	const { theme } = useThemeStore();
 
 	return (
 		<div className="p-5 flex flex-col items-center">
-			{searchResults.length > 0 ? (
-				searchResults.map((result) => (
+			{search.length > 0 ? (
+				search.map((result) => (
 					<div key={result._id} className={`flex items-center gap-3  rounded-lg p-5 md:w-96 lg:w-[60vw] xl:mb-3 ${theme === "dark" ? "bg-customGray" : "bg-slate-200" }`}>
 						<Link to={`/profile/${result._id}`}>
 							{result.profilePicture ? (

@@ -1,24 +1,23 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setSearchResults } from "../_actions/searchAction";
 import { useSearchUserMutation } from "../mutation/user";
 import { Bell, Menu, MessageCircleMore, Plus, Search } from "lucide-react";
 import CreatePost from "./CreatePost";
 import More from "./More";
 import useAuthStore from "../store/useAuth";
 import useThemeStore from "../store/useTheme";
+import useSearchStore from "../store/useSearch";
 
 const Navbar = () => {
 	const [isOpen, setIsOpen] = useState(false);
 	const [isSearching, setIsSearching] = useState("");
 
 	const { token, logout, user } = useAuthStore();
+	const { setSearchData } = useSearchStore();
 	const { theme } = useThemeStore();
 
 	const searchUserMutation = useSearchUserMutation();
 	const navigate = useNavigate();
-	const dispatch = useDispatch();
 
 	const handleLogout = () => {
 		logout();
@@ -39,7 +38,7 @@ const Navbar = () => {
 				{ isSearching, token },
 				{
 					onSuccess: (data) => {
-						dispatch(setSearchResults(data));
+						setSearchData(data);
 						navigate(`/search/${isSearching}`);
 						setIsSearching("");
 					},
