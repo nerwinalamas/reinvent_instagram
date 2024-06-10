@@ -13,7 +13,6 @@ import useAuthStore from "../store/useAuth";
 import useThemeStore from "../store/useTheme";
 
 const PostModal = ({
-	user,
 	clickedPost,
 	setClickedPost,
 	handleLike,
@@ -21,51 +20,43 @@ const PostModal = ({
 }) => {
 	const location = useLocation();
 	const [newComment, setNewComment] = useState("");
-	const { token } = useAuthStore();
+	const { token, user } = useAuthStore();
 	const { theme } = useThemeStore();
 	const createCommentMutation = useCommentPostMutation();
 	const deleteCommentMutation = useDeleteCommentPostMutation();
 	const createCommentProfileMutation = useCommentPostProfileMutation();
 	const deleteCommentProfileMutation = useDeleteCommentPostProfileMutation();
 
-	const handleComment = async (e, postId) => {
+	const handleComment = (e, postId) => {
 		e.preventDefault();
 
-		try {
-			if (location.pathname === "/") {
-				await createCommentMutation.mutateAsync({
-					postId,
-					comment: newComment,
-					token
-				});
-			} else {
-				await createCommentProfileMutation.mutateAsync({
-					postId,
-					comment: newComment,
-					token
-				});
-			}
+		if (location.pathname === "/") {
+			createCommentMutation.mutate({
+			   postId,
+			   comment: newComment,
+			   token
+		   });
+	   } else {
+			createCommentProfileMutation.mutate({
+			   postId,
+			   comment: newComment,
+			   token
+		   });
+	   }
 
-			setNewComment("");
-			document.getElementById("post_modal").close(); // BAD FOR UX
-		} catch (error) {
-			console.log("Create Comment Error: ", error);
-		}
+	   setNewComment("");
+	   document.getElementById("post_modal").close(); // BAD FOR UX
 	};
 
-	const handleDeleteComment = async (postId, commentId) => {
-		try {
-			if (location.pathname === "/") {
-				deleteCommentMutation.mutate({ postId, commentId, token });
-			} else {
-				deleteCommentProfileMutation.mutate({ postId, commentId, token });
-			}
-
-			toast.success("Deleting Comment Successfully!");
-			document.getElementById("post_modal").close(); // BAD FOR UX
-		} catch (error) {
-			console.log("Deleting Comment Error: ", error);
+	const handleDeleteComment = (postId, commentId) => {
+		if (location.pathname === "/") {
+			deleteCommentMutation.mutate({ postId, commentId, token });
+		} else {
+			deleteCommentProfileMutation.mutate({ postId, commentId, token });
 		}
+
+		toast.success("Deleting Comment Successfully!");
+		document.getElementById("post_modal").close(); // BAD FOR UX
 	};
 
 	return (
