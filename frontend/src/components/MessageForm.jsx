@@ -1,16 +1,16 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
 import { useSocket } from "../context/SocketContext";
 import { useSendMessageMutation } from "../mutation/message";
 import { Send } from "lucide-react";
 import useAuthStore from "../store/useAuth";
 import useThemeStore from "../store/useTheme";
+import useChatStore from "../store/useChat";
 
 const MessageForm = () => {
 	const [message, setMessage] = useState("");
-    const selectedChat = useSelector((state) => state.convoReducer.selectedChat);
 	const { token, user } = useAuthStore();
 	const { theme } = useThemeStore();
+	const { chat } = useChatStore();
 	const sendMessageMutation = useSendMessageMutation();
 	const { socket } = useSocket();
 
@@ -31,7 +31,7 @@ const MessageForm = () => {
 
 	return (
 		<form
-			onSubmit={(e) => handleSendMessage(e, selectedChat._id)}
+			onSubmit={(e) => handleSendMessage(e, chat._id)}
 			className={`h-28  rounded-md p-3 relative ${
 				theme === "dark" ? "bg-customGray" : "bg-slate-100"
 			} `}
