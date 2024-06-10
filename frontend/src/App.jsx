@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
 	BrowserRouter as Router,
 	Routes,
@@ -23,6 +23,7 @@ import SavedPost from "./pages/SavedPost";
 import SearchResult from "./pages/SearchResult";
 import useAuthStore from "./store/useAuth";
 import useThemeStore from "./store/useTheme";
+import { useCurrentUserMutation } from "./mutation/user";
 
 const ProtectedOutlet = () => {
 	const { isAuthenticated } = useAuthStore();
@@ -44,7 +45,19 @@ const AppLayout = () => {
 };
 
 const App = () => {
+	const { token, setUser } = useAuthStore();
 	const { theme } = useThemeStore();
+	const currentUserMutation = useCurrentUserMutation();
+
+	useEffect(() => {
+        if (token) {
+            currentUserMutation.mutate(token, {
+                onSuccess: (data) => {
+                    setUser(data);
+                },
+            });
+        }
+    }, [token]);
 
 	return (
 		<div className={`w-screen h-auto font-poppins  xl:w-auto ${theme === "dark" ? "bg-customBlack text-customWhite" : "bg-customWhite text-customBlack" }`}>
