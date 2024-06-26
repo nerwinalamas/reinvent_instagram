@@ -12,13 +12,11 @@ const MessageSection = () => {
     const { token, user } = useAuthStore();
     const { chat } = useChatStore();
 
-    const userId = chat?._id;
-    // console.log("message section: ", userId)
-    // console.log("user: ", user)
+    let userId = chat && chat._id
     const { data, isLoading, isError, error, refetch } = useQuery({
         queryKey: ["conversation", userId, token],
         queryFn: () => getConversation(userId, token),
-        enabled: !!userId,
+        enabled: !!userId && !!token,
     });
 
     const navigate = useNavigate();
@@ -60,13 +58,13 @@ const MessageSection = () => {
                 socket.off("mensahe");
             }
         };
-    }, [refetch, user._id, socket]);
+    }, [refetch, user && user._id, socket]);
 
     useEffect(() => {
-        if (data?.messages) {
+        if (data && data?.messages) {
             scrollToBottom();
         }
-    }, [data?.messages, receivingCall]);
+    }, [data && data?.messages, receivingCall]);
 
     const answerCall = (id) => {
         setCallAccepted(true);
@@ -91,7 +89,7 @@ const MessageSection = () => {
                 <p>Loading...</p>
             ) : isError ? (
                 <p>Error: {error}</p>
-            ) : data.messages.length > 0 ? (
+            ) : data && data.messages.length > 0 ? (
                 data.messages.map((convo) => (
                     <div
                         key={convo._id}
