@@ -469,6 +469,7 @@ const savePost = async (req, res) => {
 		res.status(200).json({
 			success: true,
 			message: "Post saved successfully",
+			data: user
 		});
 	} catch (error) {
 		res.status(500).json({ success: false, message: error.message });
@@ -496,6 +497,7 @@ const unsavePost = async (req, res) => {
 		res.status(200).json({
 			success: true,
 			message: "Post unsaved successfully",
+			data: user
 		});
 	} catch (error) {
 		res.status(500).json({ success: false, message: error.message });
