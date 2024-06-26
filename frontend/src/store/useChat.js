@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 const useChatStore = create((set) => ({
-    chat: null,
+    chat: [],
     setChat: (chat) => set({ chat }),
 }));
 
