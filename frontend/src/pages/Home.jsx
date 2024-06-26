@@ -14,7 +14,7 @@ import useThemeStore from "../store/useTheme";
 import useClickedPostStore from "../store/useClickedPost";
 
 const Home = () => {
-    const { token, user } = useAuthStore();
+    const { token, user, setUser } = useAuthStore();
     const { clickedHomePost, setClickHomePost } = useClickedPostStore();
     const { theme } = useThemeStore();
 
@@ -49,9 +49,17 @@ const Home = () => {
 
     const handleSavePost = (postId, isSaved) => {
         if (isSaved) {
-            unsavePostMutation.mutate({ postId, token });
+            unsavePostMutation.mutate({ postId, token }, {
+                onSuccess: (data) => {
+                    setUser(data);
+                }
+            });
         } else {
-            savePostMutation.mutate({ postId, token });
+            savePostMutation.mutate({ postId, token }, {
+                onSuccess: (data) => {
+                    setUser(data);
+                }
+            });
         }
     };
 
