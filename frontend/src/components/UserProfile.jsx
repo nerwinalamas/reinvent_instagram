@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import FollowersModal from "./FollowersModal";
-import FollowingModal from "./FollowingModal";
+import FollowersModal from "./modals/FollowersModal";
+import FollowingModal from "./modals/FollowingModal";
 import { useQuery } from "@tanstack/react-query";
 import { getUserPosts } from "../api/post";
 import useAuthStore from "../store/useAuth";
