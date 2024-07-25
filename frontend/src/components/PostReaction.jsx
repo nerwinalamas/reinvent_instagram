@@ -1,11 +1,15 @@
 import { Bookmark, MessageCircle, Redo2, ThumbsUp } from "lucide-react";
-import LikeModal from "./LikeModal";
+import LikeModal from "./modals/LikeModal";
 import useThemeStore from "../store/useTheme";
-import useAuthStore from "../store/useAuth";
 
-const PostReaction = ({ post, handleClick, handleLike, handleSavePost }) => {
+const PostReaction = ({
+    user,
+    post,
+    handleClick,
+    handleLike,
+    handleSavePost,
+}) => {
     const { theme } = useThemeStore();
-    const { user } = useAuthStore();
 
     return (
         <div className="flex flex-col gap-3 mt-2">
