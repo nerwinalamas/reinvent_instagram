@@ -7,12 +7,13 @@ import {
 	useCommentPostProfileMutation,
 	useDeleteCommentPostMutation,
 	useDeleteCommentPostProfileMutation,
-} from "../mutation/post";
+} from "../../mutation/post";
 import toast from "react-hot-toast";
-import useAuthStore from "../store/useAuth";
-import useThemeStore from "../store/useTheme";
+import useAuthStore from "../../store/useAuth";
+import useThemeStore from "../../store/useTheme";
 
 const PostModal = ({
+	user,
 	clickedPost,
 	setClickedPost,
 	handleLike,
@@ -20,7 +21,7 @@ const PostModal = ({
 }) => {
 	const location = useLocation();
 	const [newComment, setNewComment] = useState("");
-	const { token, user } = useAuthStore();
+	const { token } = useAuthStore();
 	const { theme } = useThemeStore();
 	const createCommentMutation = useCommentPostMutation();
 	const deleteCommentMutation = useDeleteCommentPostMutation();
@@ -130,16 +131,16 @@ const PostModal = ({
 											title="Like"
 											onClick={() =>
 												handleLike(
-													clickedPost._id,
-													clickedPost.likes.some(
+													clickedPost?._id,
+													clickedPost?.likes.some(
 														(like) =>
-															like._id ===
-															user._id
+															like?._id ===
+															user?._id
 													)
 												)
 											}
 											color={
-												clickedPost.likes.some(
+												clickedPost?.likes.some(
 													(like) =>
 														like._id === user._id
 												)
@@ -254,15 +255,15 @@ const PostModal = ({
 										title="Like"
 										onClick={() =>
 											handleLike(
-												clickedPost._id,
-												clickedPost.likes.some(
+												clickedPost?._id,
+												clickedPost?.likes.some(
 													(like) =>
-														like._id === user._id
+														like?._id === user?._id
 												)
 											)
 										}
 										color={
-											clickedPost.likes.some(
+											clickedPost?.likes.some(
 												(like) => like._id === user._id
 											)
 												? "green"

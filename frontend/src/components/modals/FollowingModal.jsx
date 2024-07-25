@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import useThemeStore from "../store/useTheme";
-import useUserProfileStore from "../store/useUserProfileStore";
+import useThemeStore from "../../store/useTheme";
+import useUserProfileStore from "../../store/useUserProfileStore";
 
 const FollowingModal = () => {
 	const { otherUser } = useUserProfileStore();
